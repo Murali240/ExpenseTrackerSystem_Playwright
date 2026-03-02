@@ -20,16 +20,19 @@ definitions:
     - step: &notify-slack
         name: 📢 Notify Slack
         script:
-          - pipe: atlassian/slack-notify:latest
-            variables:
-              WEBHOOK_URL: $SLACK_WEBHOOK_URL
-              MESSAGE: "Branch: $BITBUCKET_BRANCH | Commit: $BITBUCKET_COMMIT | Status: $BITBUCKET_BUILD_STATUS"
+          - |
+            if [ "$BITBUCKET_BUILD_STATUS" = "SUCCESSFUL" ]; then
+              STATUS="✅ SUCCESS"
+            else
+              STATUS="❌ FAILED"
+            fi
+
+            curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"$STATUS - Repo: $BITBUCKET_REPO_FULL_NAME | Branch: $BITBUCKET_BRANCH\"}" \
+            $SLACK_WEBHOOK_URL
 
 pipelines:
 
-  # ─────────────────────────────────────────────
-  # 🔍 Pull Request Validation (Parallel Browsers)
-  # ─────────────────────────────────────────────
   pull-requests:
     '**':
       - parallel:
@@ -53,9 +56,6 @@ pipelines:
                 - npx playwright test --project=webkit --retries=1
       - step: *notify-slack
 
-  # ─────────────────────────────────────────────
-  # 🚀 Main Branch - Full Regression
-  # ─────────────────────────────────────────────
   branches:
     main:
       - parallel:
@@ -79,9 +79,6 @@ pipelines:
                 - npx playwright test --project=webkit
       - step: *notify-slack
 
-  # ─────────────────────────────────────────────
-  # 🌙 Nightly Regression (All Browsers)
-  # ─────────────────────────────────────────────
   custom:
     nightly-regression:
       - parallel:
@@ -105,15 +102,11 @@ pipelines:
                 - npx playwright test --project=webkit
       - step: *notify-slack
 
-    # ─────────────────────────────────────────────
-    # 🌍 Environment-Based Pipelines
-    # ─────────────────────────────────────────────
     run-qa:
       - step:
           <<: *install
           name: 🚀 Run Tests on QA
           script:
-            - export BASE_URL=$BASE_URL_QA
             - npm ci
             - npx playwright test
       - step: *notify-slack
@@ -123,7 +116,6 @@ pipelines:
           <<: *install
           name: 🚀 Run Tests on UAT
           script:
-            - export BASE_URL=$BASE_URL_UAT
             - npm ci
             - npx playwright test
       - step: *notify-slack
