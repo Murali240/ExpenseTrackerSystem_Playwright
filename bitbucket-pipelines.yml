@@ -2,32 +2,128 @@ image: mcr.microsoft.com/playwright:v1.41.1-jammy
 
 options:
   size: 2x
+  max-time: 60
+
+definitions:
+  caches:
+    node: ~/.npm
+
+  steps:
+    - step: &install
+        name: 📦 Install Dependencies
+        caches:
+          - node
+        script:
+          - npm ci
+          - npx playwright install --with-deps
+
+    - step: &notify-slack
+        name: 📢 Notify Slack
+        script:
+          - pipe: atlassian/slack-notify:latest
+            variables:
+              WEBHOOK_URL: $SLACK_WEBHOOK_URL
+              MESSAGE: "Branch: $BITBUCKET_BRANCH | Commit: $BITBUCKET_COMMIT | Status: $BITBUCKET_BUILD_STATUS"
 
 pipelines:
+
+  # ─────────────────────────────────────────────
+  # 🔍 Pull Request Validation (Parallel Browsers)
+  # ─────────────────────────────────────────────
   pull-requests:
     '**':
-      - step:
-          name: 🔍 PR Validation - Playwright Tests
-          caches:
-            - node
-          script:
-            - npm ci
-            - npx playwright install --with-deps
-            - npx playwright test --retries=1
-          artifacts:
-            - playwright-report/**
-            - test-results/**
+      - parallel:
+          - step:
+              <<: *install
+              name: 🧪 PR - Chromium
+              script:
+                - npm ci
+                - npx playwright test --project=chromium --retries=1
+          - step:
+              <<: *install
+              name: 🧪 PR - Firefox
+              script:
+                - npm ci
+                - npx playwright test --project=firefox --retries=1
+          - step:
+              <<: *install
+              name: 🧪 PR - WebKit
+              script:
+                - npm ci
+                - npx playwright test --project=webkit --retries=1
+      - step: *notify-slack
 
+  # ─────────────────────────────────────────────
+  # 🚀 Main Branch - Full Regression
+  # ─────────────────────────────────────────────
   branches:
     main:
+      - parallel:
+          - step:
+              <<: *install
+              name: 🚀 Main - Chromium
+              script:
+                - npm ci
+                - npx playwright test --project=chromium
+          - step:
+              <<: *install
+              name: 🚀 Main - Firefox
+              script:
+                - npm ci
+                - npx playwright test --project=firefox
+          - step:
+              <<: *install
+              name: 🚀 Main - WebKit
+              script:
+                - npm ci
+                - npx playwright test --project=webkit
+      - step: *notify-slack
+
+  # ─────────────────────────────────────────────
+  # 🌙 Nightly Regression (All Browsers)
+  # ─────────────────────────────────────────────
+  custom:
+    nightly-regression:
+      - parallel:
+          - step:
+              <<: *install
+              name: 🌙 Nightly - Chromium
+              script:
+                - npm ci
+                - npx playwright test --project=chromium
+          - step:
+              <<: *install
+              name: 🌙 Nightly - Firefox
+              script:
+                - npm ci
+                - npx playwright test --project=firefox
+          - step:
+              <<: *install
+              name: 🌙 Nightly - WebKit
+              script:
+                - npm ci
+                - npx playwright test --project=webkit
+      - step: *notify-slack
+
+    # ─────────────────────────────────────────────
+    # 🌍 Environment-Based Pipelines
+    # ─────────────────────────────────────────────
+    run-qa:
       - step:
-          name: 🚀 Main Branch - Full Regression
-          caches:
-            - node
+          <<: *install
+          name: 🚀 Run Tests on QA
           script:
+            - export BASE_URL=$BASE_URL_QA
             - npm ci
-            - npx playwright install --with-deps
             - npx playwright test
-          artifacts:
-            - playwright-report/**
-            - test-results/**
+      - step: *notify-slack
+
+    run-uat:
+      - step:
+          <<: *install
+          name: 🚀 Run Tests on UAT
+          script:
+            - export BASE_URL=$BASE_URL_UAT
+            - npm ci
+            - npx playwright test
+      - step: *notify-slack
