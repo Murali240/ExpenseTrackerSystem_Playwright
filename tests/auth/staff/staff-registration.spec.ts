@@ -1,5 +1,3 @@
-// tests/auth/staff-registration.spec.ts
-
 import { test, expect } from '@fixtures/AuthFixtures';
 import { Logger } from '@utils/logger';
 

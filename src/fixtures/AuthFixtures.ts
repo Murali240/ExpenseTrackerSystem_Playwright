@@ -1,14 +1,18 @@
 import { test as base, Page } from '@playwright/test';
 import fs from 'fs';
-import { loginAs } from '@utils/authHelper';
+import { loginAs } from '@utils/helpers/authHelper';
 import { Paths } from '@constants/Paths';
 import { Logger } from '@utils/logger';
 
 // Page Objects
-import { LoginPage } from '@pages/login/LoginPage';
+import { PublicPage } from '@pages/public/PublicPage';
+import { PortalSelectionPage } from '@pages/public/PortalSelectionPage';
 import { ProgramsPage } from '@pages/programs/ProgramsPage';
 import { AddProgramPage } from '@pages/programs/AddProgramPage';
 import { EditProgramPage } from '@pages/programs/EditProgramPage';
+import { StaffLoginPage } from '@pages/auth/staff/StaffLoginPage';
+import { OrganizationLoginPage } from '@pages/auth/organization/OrganizationLoginPage';
+import { IndividualLoginPage } from '@pages/auth/individual/IndividualLoginPage';
 
 /* ==================== TYPES ==================== */
 type Fixtures = {
@@ -16,15 +20,19 @@ type Fixtures = {
   staffPage: Page;
   orgPage: Page;
   individualPage: Page;
-  
+
   // ✅ Guest fixtures (no session - for registration/login tests)
   guestPage: Page;
-  staffGuestPage: Page;
-  orgGuestPage: Page;
-  individualGuestPage: Page;
   
+
   // ✅ Page objects
-  loginPage: LoginPage;
+  staffLoginPage:StaffLoginPage;
+  organizationLoginPage:OrganizationLoginPage;
+  individualLoginPage:IndividualLoginPage;
+
+
+  publicPage: PublicPage;
+  portalSelectionPage: PortalSelectionPage;
   programsPage: ProgramsPage;
   addProgramPage: AddProgramPage;
   editProgramPage: EditProgramPage;
@@ -48,7 +56,7 @@ function isSessionValid(page: Page): boolean {
 
 function hasValidCookies(authFile: string): boolean {
   if (!fs.existsSync(authFile)) return false;
-  
+
   try {
     const content = JSON.parse(fs.readFileSync(authFile, 'utf8'));
     const cookieCount = content.cookies?.length || 0;
@@ -79,7 +87,7 @@ async function createAuthenticatedPage(
   Logger.info(`⚙️  Setting up AUTHENTICATED ${role} user`);
 
   const hasSession = hasValidCookies(authFile);
-  
+
   if (hasSession) {
     Logger.info(`📂 Found existing ${role} session file`);
   } else {
@@ -92,9 +100,9 @@ async function createAuthenticatedPage(
 
   const page = await context.newPage();
 
-  await page.goto('/profiles/dashboard', { 
+  await page.goto('/profiles/dashboard', {
     waitUntil: 'networkidle',
-    timeout: 20000 
+    timeout: 20000
   });
 
   if (!isSessionValid(page)) {
@@ -121,19 +129,17 @@ async function createAuthenticatedPage(
  */
 async function createGuestPage(browser: any): Promise<Page> {
   Logger.info(`⚙️  Setting up GUEST page (no authentication)`);
-  
+
   // ✅ Create context WITHOUT any stored session
-  const context = await browser.newContext({
-    // NO storageState - fresh browser session
-  });
+  const context = await browser.newContext(); // NO storageState - fresh browser session
 
   const page = await context.newPage();
-  
+
   // ✅ Go to public homepage (not dashboard)
   await page.goto('/', { waitUntil: 'networkidle' });
-  
+
   Logger.success(`✅ Guest page ready (unauthenticated)`);
-  
+
   return page;
 }
 
@@ -189,52 +195,27 @@ export const test = base.extend<Fixtures>({
     Logger.info('🧹 Guest page cleaned up');
   },
 
-  /**
-   * Staff portal guest page
-   * Use for: Staff registration/login tests
-   */
-  staffGuestPage: async ({ browser }, use) => {
-    Logger.info(`⚙️  Setting up STAFF guest page (for registration)`);
-    const context = await browser.newContext();
-    const page = await context.newPage();
-    await page.goto('/staff', { waitUntil: 'networkidle' });
-    await use(page);
-    await page.context().close();
-    Logger.info('🧹 Staff guest page cleaned up');
-  },
-
-  /**
-   * Organization portal guest page
-   * Use for: Organization registration tests
-   */
-  orgGuestPage: async ({ browser }, use) => {
-    Logger.info(`⚙️  Setting up ORGANIZATION guest page (for registration)`);
-    const context = await browser.newContext();
-    const page = await context.newPage();
-    await page.goto('/organization', { waitUntil: 'networkidle' });
-    await use(page);
-    await page.context().close();
-    Logger.info('🧹 Organization guest page cleaned up');
-  },
-
-  /**
-   * Individual portal guest page
-   * Use for: Individual registration tests
-   */
-  individualGuestPage: async ({ browser }, use) => {
-    Logger.info(`⚙️  Setting up INDIVIDUAL guest page (for registration)`);
-    const context = await browser.newContext();
-    const page = await context.newPage();
-    await page.goto('/individual', { waitUntil: 'networkidle' });
-    await use(page);
-    await page.context().close();
-    Logger.info('🧹 Individual guest page cleaned up');
-  },
 
   /* ==================== PAGE OBJECT FIXTURES ==================== */
 
-  loginPage: async ({ guestPage }, use) => {
-    await use(new LoginPage(guestPage));
+  staffLoginPage: async({ guestPage}, use) =>{
+    await use( new StaffLoginPage(guestPage));
+  },
+  
+  organizationLoginPage: async({ guestPage}, use) =>{
+    await use( new OrganizationLoginPage(guestPage));
+  },
+
+   individualLoginPage: async({ guestPage}, use) =>{
+    await use( new IndividualLoginPage(guestPage));
+  },
+
+  publicPage: async ({ guestPage }, use) => {
+    await use(new PublicPage(guestPage));
+  },
+
+  portalSelectionPage: async ({ guestPage }, use) => {
+    await use(new PortalSelectionPage(guestPage));
   },
 
   programsPage: async ({ staffPage }, use) => {
@@ -252,12 +233,12 @@ export const test = base.extend<Fixtures>({
 
 /* ==================== GLOBAL HOOKS ==================== */
 
-test.beforeEach(async ({}, testInfo) => {
+test.beforeEach(async ({ }, testInfo) => {
   Logger.separator();
   Logger.info(`▶️  Starting Test: ${testInfo.title}`);
 });
 
-test.afterEach(async ({}, testInfo) => {
+test.afterEach(async ({ }, testInfo) => {
   const status = testInfo.status === 'passed' ? '✅' : '❌';
   Logger.info(`${status} Test ${testInfo.status}: ${testInfo.title}`);
   Logger.separator();

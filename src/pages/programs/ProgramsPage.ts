@@ -93,6 +93,12 @@ export class ProgramsPage extends SharedComponents {
     return this.getAddNewlink(AddNewLinkText.PROGRAM);
   }
 
+
+  /* 
+    get is a TypeScript getter. get defines a read-only property that runs a function when accessed
+    So instead of calling it like a method: page.programPageHeader(); // ❌ not a function
+    You access it like a property:page.programPageHeader; // ✅ works
+  */
   /* ==================== Filter Methods ==================== */
 
   

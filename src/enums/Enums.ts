@@ -8,6 +8,12 @@ export enum ExcelOutputType {
   CSV = 'csv'
 }
 
+export enum LoginPortalHeaders {
+  STAFF_LOGIN_PORTAL_TITLE = 'Staff Portal Sign In',
+  ORGANIZATION_LOGIN_PORTAL_TITLE = 'Organization Portal Sign In',
+  INDIVIDUAL_LOGIN_PORTAL_TITLE = 'Individual Portal Sign In'
+}
+
 export enum MainMenu {
   DASHBOARD = 'Dashboard',
   DIARY = 'Diary',
