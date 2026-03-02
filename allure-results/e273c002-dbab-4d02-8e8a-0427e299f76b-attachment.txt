@@ -1,6 +1,0 @@
-================================================================================
-[INFO] 2026-02-13T13:20:56.858Z - Starting Test: TC-AP-003: Cancel Program Creation
-[INFO] 2026-02-13T13:20:57.543Z - Setting up staff user fixture
-[INFO] 2026-02-13T13:20:58.330Z - Using existing staff auth state
-[INFO] 2026-02-13T13:21:29.073Z - Ending Test: TC-AP-003: Cancel Program Creation
-================================================================================

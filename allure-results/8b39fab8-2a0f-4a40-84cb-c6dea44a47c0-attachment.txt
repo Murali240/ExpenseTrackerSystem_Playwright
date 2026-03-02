@@ -1,9 +1,0 @@
-================================================================================
-[INFO] 2026-02-15T01:26:27.839Z - Starting Test: TC-PP-001: View Programs Page @smoke @regression
-[INFO] 2026-02-15T01:26:29.537Z - Setting up staff user fixture
-[INFO] 2026-02-15T01:26:31.011Z - No existing auth found, performing login
-[INFO] 2026-02-15T01:26:31.012Z - Attempting login as: staff
-[STEP] 2026-02-15T01:26:31.012Z - Executing: Navigating to public page
-[INFO] 2026-02-15T01:26:31.012Z - Navigating to: /pages/public
-[INFO] 2026-02-15T01:27:06.049Z - Ending Test: TC-PP-001: View Programs Page @smoke @regression
-================================================================================

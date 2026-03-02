@@ -1,0 +1,33 @@
+image: mcr.microsoft.com/playwright:v1.41.1-jammy
+
+options:
+  size: 2x
+
+pipelines:
+  pull-requests:
+    '**':
+      - step:
+          name: 🔍 PR Validation - Playwright Tests
+          caches:
+            - node
+          script:
+            - npm ci
+            - npx playwright install --with-deps
+            - npx playwright test --retries=1
+          artifacts:
+            - playwright-report/**
+            - test-results/**
+
+  branches:
+    main:
+      - step:
+          name: 🚀 Main Branch - Full Regression
+          caches:
+            - node
+          script:
+            - npm ci
+            - npx playwright install --with-deps
+            - npx playwright test
+          artifacts:
+            - playwright-report/**
+            - test-results/**

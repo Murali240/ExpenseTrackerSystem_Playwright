@@ -1,6 +1,0 @@
-================================================================================
-[INFO] 2026-02-14T01:17:53.105Z - Starting Test: TC-PP-001: View Programs Page @smoke @regression
-[INFO] 2026-02-14T01:17:54.951Z - Setting up staff user fixture
-[INFO] 2026-02-14T01:17:56.106Z - Using existing staff auth state
-[INFO] 2026-02-14T01:18:31.157Z - Ending Test: TC-PP-001: View Programs Page @smoke @regression
-================================================================================
