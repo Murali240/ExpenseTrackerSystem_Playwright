@@ -9,7 +9,7 @@ import { SharedComponents } from '@pages/base/SharedComponents';
 
 test.describe('Login Tests @auth @login', () => {
 
-  test('TC-LOGIN-001: Organization Login with Valid Credentials', async ({ organizationLoginPage, guestPage, publicPage, portalSelectionPage }) => {
+  test('TC-ORG-LOGIN-001: Organization Login with Valid Credentials', async ({ organizationLoginPage, guestPage, publicPage, portalSelectionPage }) => {
     Logger.testStart('TC-LOGIN-001: Organization Login');
 
     const nav = new NavigationHelper(guestPage);
@@ -79,7 +79,7 @@ test.describe('Login Tests @auth @login', () => {
   });
 
 
-  test('TC-LOGIN-002: Organization Login with Invalid Credentials', async ({organizationLoginPage,guestPage }) => {
+  test('TC-ORG-NEG-LOGIN-002: Organization Login with valid Username + invalid Password', async ({organizationLoginPage,guestPage }) => {
     Logger.testStart('TC-LOGIN-002: Invalid Login');
 
     const nav = new NavigationHelper(guestPage);
@@ -100,8 +100,12 @@ test.describe('Login Tests @auth @login', () => {
      
     });
 
-    await test.step('Login with Invalid Credentials', async () => {
-      await organizationLoginPage.organizationLogin(process.env.INVALID_USERNAME!, process.env.INVALID_PASSWORD!,process.env.INVALID_ORG_NAME!);
+   await test.step('Login with Valid Username + Invalid Password', async () => {
+      await organizationLoginPage.organizationLogin(
+        process.env.ORG_USERNAME!,
+        process.env.INVALID_PASSWORD!,
+        process.env.ORG_NAME!
+      );
     });
 
     await test.step('Verify Error Message', async () => {
@@ -110,7 +114,7 @@ test.describe('Login Tests @auth @login', () => {
       await Assertions.verifyElementVisible(errorMessage, 'Error message', 10000);
       await Assertions.verifyElementContainsText(
         errorMessage,
-        'Please Enter Your Valid Username and Password',
+        'Invalid Credentials',
         'Error message text'
       );
     });

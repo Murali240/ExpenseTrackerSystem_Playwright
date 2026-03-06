@@ -9,7 +9,7 @@ import { SharedComponents } from '@pages/base/SharedComponents';
 
 test.describe('Login Tests @auth @login', () =>{
 
-  test('TC-LOGIN-001: Staff Login with Valid Credentials', async ({ staffLoginPage,guestPage, publicPage, portalSelectionPage }) => {
+  test('TC-STAFF-LOGIN-001: Staff Login with Valid Credentials', async ({ staffLoginPage,guestPage, publicPage, portalSelectionPage }) => {
     Logger.testStart('TC-LOGIN-001: Staff Login');
 
     const nav = new NavigationHelper(guestPage);
@@ -77,7 +77,7 @@ test.describe('Login Tests @auth @login', () =>{
   });
 
 
-  test('TC-LOGIN-002: Staff Login with Invalid Credentials', async ({ staffLoginPage,guestPage }) => {
+  test('TC-STAFF-NEG-LOGIN-002: Staff Login with Invalid Credentials', async ({ staffLoginPage,guestPage }) => {
     Logger.testStart('TC-LOGIN-002: Invalid Login');
 
     const nav = new NavigationHelper(guestPage);

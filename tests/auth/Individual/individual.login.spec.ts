@@ -54,8 +54,8 @@ test.describe('Login Tests @auth @login', () => {
 
     await test.step('Login with Valid Credentials', async () => {
       await individualLoginPage.individualLogin(
-        process.env.STAFF_USERNAME!,
-        process.env.STAFF_PASSWORD!
+        process.env.IND_USERNAME!,
+        process.env.IND_PASSWORD!
       );
     });
 
@@ -91,7 +91,10 @@ test.describe('Login Tests @auth @login', () => {
     });
 
     await test.step('Login with Invalid Credentials', async () => {
-      await individualLoginPage.individualLogin('invalid@test.com', 'WrongPassword123');
+      await individualLoginPage.individualLogin(
+        process.env.INVALID_USERNAME!,
+        process.env.INVALID_PASSWORD!
+      );
     });
 
     await test.step('Verify Error Message', async () => {
@@ -100,7 +103,7 @@ test.describe('Login Tests @auth @login', () => {
       await Assertions.verifyElementVisible(errorMessage, 'Error message', 10000);
       await Assertions.verifyElementContainsText(
         errorMessage,
-        'Please Enter Your Valid Username and Password',
+        'Invalid Credentials',
         'Error message text'
       );
     });
