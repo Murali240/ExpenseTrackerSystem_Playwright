@@ -101,8 +101,16 @@ export class BasePage {
   async selectOption(locator: Locator, value: string, dropdownName: string = 'dropdown'): Promise<void> {
     Logger.info(`Selecting option '${value}' from ${dropdownName}`);
     await this.waitForElement(locator);
+    //await locator.selectOption({ label: value })
     await locator.selectOption(value);
   }
+
+
+
+
+
+  
+
 
   /**
    * Get text from element
