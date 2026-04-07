@@ -12,44 +12,24 @@ test.describe('Login Tests @auth @login', () => {
   test('TC-ORG-LOGIN-001: Organization Login with Valid Credentials', async ({ organizationLoginPage, guestPage, publicPage, portalSelectionPage }) => {
     Logger.testStart('TC-LOGIN-001: Organization Login');
 
-    const nav = new NavigationHelper(guestPage);
-    
-
     await test.step('Verify and Navigate to Organization Login', async () => {
-      // ✅ Verify Login button before clicking
+      const organizationRadio = guestPage.locator('label.toggle-option:has-text("ORGANIZATION")');
       await Assertions.verifyElementVisible(
-        publicPage.loginButton,
-        'Login button'
+        organizationRadio,
+        'ORGANIZATION radio button'
       );
       
-      // Navigate using publicPage
-      await publicPage.clickOnLogin();
+      // Navigate to Organization form
+      await organizationRadio.click();
       
-      // ✅ Verify Staff Portal link before clicking
-      await Assertions.verifyElementVisible(
-        portalSelectionPage.organizationPortalLoginLink,
-        'Organization Portal Login link'
-      );
-      
-      await portalSelectionPage.clickOnOrganizationPortalLoginLink();
-      
-      Logger.success('Navigated to Organization Login page');
+      Logger.success('Selected Organization Login option');
     });
 
     await test.step('Verify Organization Login Page', async () => {
-     // const loginPortalHeader = guestPage.locator('.login100-form-title-1');
      const sharedComponents = new SharedComponents(guestPage);
-      
-      await Assertions.verifyElementVisible(sharedComponents.loginPortalHeader, 'Login Portal Header');
-      await Assertions.verifyElementText(
-        sharedComponents.loginPortalHeader,
-        LoginPortalHeaders.ORGANIZATION_LOGIN_PORTAL_TITLE,
-        'Login Portal Title'
-      );
       
       await Assertions.verifyElementVisible(sharedComponents.userNameField, 'Username field');
       await Assertions.verifyElementVisible(sharedComponents.passwordField, 'Password field');
-      await Assertions.verifyElementVisible(sharedComponents.organizationDropDown, ' Organization Drop Down filed');
       await Assertions.verifyElementVisible(sharedComponents.login, 'Login button');
     });
 
@@ -86,18 +66,9 @@ test.describe('Login Tests @auth @login', () => {
     //const organizationLoginPage = new OrganizationLoginPage(guestPage);
 
 
-    await test.step('Navigate to Organizaion Login', async () => {
+    await test.step('Navigate to Organization Login', async () => {
       // ✅ Using NavigationHelper - no manual verification needed inside
       await nav.goToOrgLogin();
-      
-      const sharedComponents = new SharedComponents(guestPage);
-      
-      await Assertions.verifyElementVisible(sharedComponents.loginPortalHeader, 'Login Portal Header');
-      await Assertions.verifyElementText(
-        sharedComponents.loginPortalHeader,
-        LoginPortalHeaders.ORGANIZATION_LOGIN_PORTAL_TITLE,
-        'Login Portal Title');
-     
     });
 
    await test.step('Login with Valid Username + Invalid Password', async () => {

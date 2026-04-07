@@ -9,7 +9,7 @@ export enum ExcelOutputType {
 }
 
 export enum LoginPortalHeaders {
-  STAFF_LOGIN_PORTAL_TITLE = 'Staff Portal Sign In',
+  STAFF_LOGIN_PORTAL_TITLE = 'Staff Login',
   ORGANIZATION_LOGIN_PORTAL_TITLE = 'Organization Portal Sign In',
   INDIVIDUAL_LOGIN_PORTAL_TITLE = 'Individual Portal Sign In'
 }
@@ -31,7 +31,8 @@ export enum SubMenu {
 }
 
 export enum DashboardTitles {
-  STAFF_DASHBOARD_TITLE = 'Internal Portal',
+  STAFF_GRANTOR_DASHBOARD_TITLE = 'Staff User - Grantor Portal',
+  STAFF_GRANTEE_DASHBOARD_TITLE = 'Staff User - Grantee Portal',
   ORGANIZATION_DASHBOARD_TITLE = 'Organization Portal',
   INDIVIDUAL_DASHBOARD_TITLE = 'Individual Portal'
 }

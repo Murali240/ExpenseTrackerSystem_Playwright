@@ -50,7 +50,7 @@
     "ci:regression": "npm run clean:auth && playwright test --grep @regression",
     "ci:parallel": "npm run clean:auth && playwright test --workers=3",
     "validate:env": "node -e \"require('dotenv').config(); const required = ['ISSI_GMS_URL', 'STAFF_USERNAME', 'STAFF_PASSWORD', 'ORG_USERNAME', 'ORG_PASSWORD', 'ORG_NAME', 'IND_USERNAME', 'IND_PASSWORD']; const missing = required.filter(v => !process.env[v]); if (missing.length) { console.error('❌ Missing env vars:', missing); process.exit(1); } console.log('✅ All env vars present');\"",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint .",
     "format": "prettier --write \"**/*.{ts,json,md}\"",
     "type-check": "tsc --noEmit"
   },
@@ -65,10 +65,15 @@
   "author": "Rajasekhar",
   "license": "ISC",
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@playwright/test": "^1.57.0",
     "@types/node": "^25.0.3",
     "allure-playwright": "^3.4.5",
-    "rimraf": "^6.1.3"
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.7.4",
+    "rimraf": "^6.1.3",
+    "typescript-eslint": "^8.50.0"
   },
   "dependencies": {
     "allure-commandline": "^2.36.0",

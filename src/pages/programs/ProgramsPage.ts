@@ -2,8 +2,6 @@ import { Page, Locator } from '@playwright/test';
 import { SharedComponents } from '../base/SharedComponents';
 import { Logger } from '../../utils/logger';
 import { AddNewLinkText, PageHeaders } from '@enums/Enums';
-import { Assertions } from '@utils/assertions';
-
 
 /**
  * Programs List Page Object

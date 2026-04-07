@@ -1,0 +1,91 @@
+[dotenv@17.3.1] injecting env (11) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+STAFF LOGIN INPUTS:
+[
+  {
+    placeholder: '',
+    name: 'csrfmiddlewaretoken',
+    type: 'hidden',
+    id: ''
+  },
+  { placeholder: '', name: 'portal', type: 'hidden', id: '' },
+  { placeholder: 'Username', name: 'username', type: 'text', id: '' },
+  {
+    placeholder: 'Enter your password',
+    name: 'password',
+    type: 'password',
+    id: 'grantorPassword'
+  },
+  {
+    placeholder: '',
+    name: 'csrfmiddlewaretoken',
+    type: 'hidden',
+    id: ''
+  },
+  { placeholder: '', name: 'portal', type: 'hidden', id: '' },
+  { placeholder: 'Username', name: 'username', type: 'text', id: '' },
+  {
+    placeholder: 'Enter your password',
+    name: 'password',
+    type: 'password',
+    id: 'granteePassword'
+  },
+  {
+    placeholder: '',
+    name: 'csrfmiddlewaretoken',
+    type: 'hidden',
+    id: ''
+  },
+  {
+    placeholder: 'Username',
+    name: 'username',
+    type: 'text',
+    id: 'user'
+  },
+  {
+    placeholder: 'Email Address',
+    name: 'email',
+    type: 'email',
+    id: 'email'
+  }
+]
+INDIVIDUAL LOGIN INPUTS:
+[
+  {
+    placeholder: '',
+    name: 'csrfmiddlewaretoken',
+    type: 'hidden',
+    id: ''
+  },
+  { placeholder: '', name: 'loginType', type: 'radio', id: '' },
+  { placeholder: '', name: 'loginType', type: 'radio', id: '' },
+  {
+    placeholder: 'Username',
+    name: 'orgusername',
+    type: 'text',
+    id: 'inputusername'
+  },
+  {
+    placeholder: 'Enter your password',
+    name: 'orgpassword',
+    type: 'password',
+    id: 'passwordField'
+  },
+  {
+    placeholder: '',
+    name: 'csrfmiddlewaretoken',
+    type: 'hidden',
+    id: ''
+  },
+  {
+    placeholder: 'Username',
+    name: 'username',
+    type: 'text',
+    id: 'user'
+  },
+  {
+    placeholder: 'Email Address',
+    name: 'email',
+    type: 'email',
+    id: 'email'
+  }
+]

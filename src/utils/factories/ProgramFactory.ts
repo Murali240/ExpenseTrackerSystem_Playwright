@@ -23,6 +23,9 @@ export interface ProgramBasicInfo {
   description?: string;
 }
 
+/** Alias used by page objects (Add Program form = basic info shape). */
+export type ProgramData = ProgramBasicInfo;
+
 /**
  * Program Contact Information (Step 2 - Edit Program > Contact tab)
  */

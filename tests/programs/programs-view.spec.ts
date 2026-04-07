@@ -1,4 +1,4 @@
-import { test, expect } from '@fixtures/AuthFixtures';
+import { test } from '@fixtures/AuthFixtures';
 import { Assertions } from '@utils/assertions';
 import { Logger } from '@utils/logger';
 import { PageHeaders, AddNewLinkText } from '@enums/Enums';

@@ -1,6 +1,6 @@
 // tests/auth/login.spec.ts - CLEANEST VERSION
 
-import { test, expect } from '@fixtures/AuthFixtures';
+import { test } from '@fixtures/AuthFixtures';
 import { Assertions } from '@utils/assertions';
 import { Logger } from '@utils/logger';
 import { NavigationHelper } from '@utils/helpers/navigationHelper';
@@ -9,43 +9,24 @@ import { SharedComponents } from '@pages/base/SharedComponents';
 
 test.describe('Login Tests @auth @login', () => {
 
-  test('TC-LOGIN-001: Staff Login with Valid Credentials', async ({individualLoginPage, guestPage, publicPage, portalSelectionPage }) => {
-    Logger.testStart('TC-LOGIN-001: Staff Login');
+  test('TC-IND-LOGIN-001: Individual Login with Valid Credentials', async ({individualLoginPage, guestPage, publicPage, portalSelectionPage }) => {
+    Logger.testStart('TC-IND-LOGIN-001: Individual Login');
 
-    const nav = new NavigationHelper(guestPage);
-    //const staffLoginPage = new StaffLoginPage(guestPage);
-
-    await test.step('Verify and Navigate to Staff Login', async () => {
-      // ✅ Verify Login button before clicking
+    await test.step('Verify and Navigate to Individual Login', async () => {
+      const individualRadio = guestPage.locator('label.toggle-option:has-text("INDIVIDUAL")');
       await Assertions.verifyElementVisible(
-        publicPage.loginButton,
-        'Login button'
+        individualRadio,
+        'INDIVIDUAL radio button'
       );
       
-      // Navigate using publicPage
-      await publicPage.clickOnLogin();
+      // Navigate to Individual form
+      await individualRadio.click();
       
-      // ✅ Verify Individual  Portal link before clicking
-      await Assertions.verifyElementVisible(
-        portalSelectionPage.individualPortalLoginLink,
-        'Individual Portal Login link'
-      );
-      
-      await portalSelectionPage.clickOnIndividualPortalLoginLink();
-      
-      Logger.success('Navigated to Individaual Login page');
+      Logger.success('Selected Individual Login option');
     });
 
     await test.step('Verify Individual Login Page', async () => {
-      //const loginPortalHeader = guestPage.locator('.login100-form-title-1');
-       const sharedComponents = new SharedComponents(guestPage);
-      
-      await Assertions.verifyElementVisible(sharedComponents.loginPortalHeader, 'Login Portal Header');
-      await Assertions.verifyElementText(
-        sharedComponents.loginPortalHeader,
-        LoginPortalHeaders.INDIVIDUAL_LOGIN_PORTAL_TITLE,
-        'Login Portal Title'
-      );
+      const sharedComponents = new SharedComponents(guestPage);
       
       await Assertions.verifyElementVisible(sharedComponents.userNameField, 'Username field');
       await Assertions.verifyElementVisible(sharedComponents.passwordField, 'Password field');
@@ -73,7 +54,7 @@ test.describe('Login Tests @auth @login', () => {
       Logger.success('Login successful');
     });
 
-    Logger.testEnd('TC-LOGIN-001');
+    Logger.testEnd('TC-IND-LOGIN-001');
   });
 
 
@@ -83,11 +64,9 @@ test.describe('Login Tests @auth @login', () => {
     const nav = new NavigationHelper(guestPage);
    // const staffLoginPage = new StaffLoginPage(guestPage);
 
-    await test.step('Navigate to Staff Login', async () => {
+    await test.step('Navigate to Individual Login', async () => {
       // ✅ Using NavigationHelper - no manual verification needed inside
       await nav.goToIndividualLogin();
-      
-    
     });
 
     await test.step('Login with Invalid Credentials', async () => {

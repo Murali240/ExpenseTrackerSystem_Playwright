@@ -21,6 +21,14 @@
       "@types/*": ["src/types/*"]
     }
   },
-  "include": ["src/**/*", "tests/**/*", "tests/programs/program.spec.ts", "tests_backup_20260213_171823/programs/programs-add.spec.ts", "tests_backup_20260213_171823/programs/programs-e2e.spec.ts", "tests_backup_20260213_171823/programs/programs-edit.spec.ts"],
-  "exclude": ["node_modules", "dist", "test-results", "playwright-report", "allure-results", "allure-report"]
+  "include": ["src/**/*", "tests/**/*", "playwright.config.ts", "global-setup.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "test-results",
+    "playwright-report",
+    "allure-results",
+    "allure-report",
+    "**/tests_backup_*"
+  ]
 }

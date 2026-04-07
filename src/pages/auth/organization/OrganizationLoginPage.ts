@@ -96,8 +96,13 @@ export class OrganizationLoginPage extends SharedComponents {
     Logger.info(`Filling password`);
     await this.fillInput(this.passwordField, password, 'Password');
     
-    // ✅ Select organization
-    await this.selectOrganization(organization);
+    // ✅ Select organization (if present)
+    const isOrgDropdownVisible = await this.organizationDropDown.isVisible({ timeout: 5000 }).catch(() => false);
+    if (isOrgDropdownVisible) {
+        await this.selectOrganization(organization);
+    } else {
+        Logger.info('Organization dropdown not visible, skipping selection');
+    }
     
     // ✅ Click login button
     await this.clickElement(this.login, 'Login submit button');

@@ -1,6 +1,6 @@
-import { Page, Locator, expect } from "@playwright/test";
+import { Page, Locator } from "@playwright/test";
 import { Logger } from "@utils/logger";
-import { watch } from "node:fs";
+import { Assertions } from "@utils/assertions";
 
 /**
  * Base Page Object
@@ -9,7 +9,26 @@ import { watch } from "node:fs";
 export class BasePage {
   constructor(protected page: Page) {}
 
+  /** Delegates to {@link Assertions} so page objects can use `this.verify…` helpers. */
+  protected async verifyElementVisible(
+    locator: Locator,
+    elementName: string,
+    timeout: number = 10000
+  ): Promise<void> {
+    return Assertions.verifyElementVisible(locator, elementName, timeout);
+  }
 
+  protected async verifyElementText(
+    locator: Locator,
+    expectedText: string,
+    elementName: string
+  ): Promise<void> {
+    return Assertions.verifyElementText(locator, expectedText, elementName);
+  }
+
+  protected async isElementVisible(locator: Locator, timeout: number = 5000): Promise<boolean> {
+    return Assertions.isElementVisible(locator, timeout);
+  }
 
   /* ==================== Navigation Methods ==================== */
 
@@ -42,7 +61,7 @@ export class BasePage {
    * Wait for page to load completely
    */
   async waitForPageLoad(): Promise<void> {
-    await this.page.waitForLoadState('networkidle', { timeout: 30000 });
+    await this.page.waitForLoadState('load', { timeout: 30000 });
   }
 
   /**

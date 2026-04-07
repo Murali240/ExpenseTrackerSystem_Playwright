@@ -1,598 +1,254 @@
-# 🎭 Playwright Test Automation Framework
+# 🎭 Playwright Test Automation Framework (ISSI GMS)
 
-![Playwright Tests](https://github.com/Rajno1/PlaywrightProject/actions/workflows/playwright.yml/badge.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-1.57.0-45ba4b?logo=playwright&logoColor=white)
 ![License](https://img.shields.io/badge/license-ISC-blue)
 
 ## 📖 Table of Contents
-1. [What is This Framework?](#what-is-this-framework)
-2. [Simple Explanation (Non-Technical)](#simple-explanation-non-technical)
-3. [Framework Architecture](#framework-architecture)
-4. [Setup Instructions](#setup-instructions)
-5. [How to Run Tests](#how-to-run-tests)
-6. [Creating New Tests](#creating-new-tests)
-7. [Interview Explanation Guide](#interview-explanation-guide)
+
+- [What is This Framework?](#-what-is-this-framework)
+- [Project Folder Structure](#-project-folder-structure)
+- [Prerequisites](#-prerequisites)
+- [Setup & Installation (5-Minute Quick Start)](#-setup--installation-5-minute-quick-start)
+- [How to Run Tests](#-how-to-run-tests)
+- [Viewing Reports](#-viewing-reports)
+- [Creating Your First Test](#-creating-your-first-test)
+- [Best Practices & Guidelines](#-best-practices--guidelines)
+- [Troubleshooting](#-troubleshooting)
+- [Contribution Guidelines](#-contribution-guidelines)
 
 ---
 
 ## 🎯 What is This Framework?
 
-This is a **professional-grade test automation framework** built for testing the **ISSI GMS (Grants Management System)** web application. It uses **Playwright** with **TypeScript** to automate user interactions and verify system behavior.
+This is a **professional-grade test automation framework** built for testing the **ISSI GMS (Grants Management System)** web application. It uses **Playwright** with **TypeScript** to automate user interactions, verify system behavior, and ensure quality.
 
 ### Key Features:
-✅ **Automated Testing** - Tests run automatically without manual clicking
-✅ **Multiple User Roles** - Tests staff, organization, and individual users
-✅ **Smart Test Data** - Generates unique test data every run
-✅ **Comprehensive Reporting** - Beautiful reports with screenshots
-✅ **Fast Execution** - Caches login to save time
-✅ **Easy Maintenance** - Well-organized, reusable code
+- ✅ **Automated End-to-End Testing** - Tests run automatically without manual clicking.
+- ✅ **Multiple User Roles** - Seamlessly test staff, organization, department, and individual user flows.
+- ✅ **Smart Test Data** - Generates unique test data for every run (using dynamic factories).
+- ✅ **Comprehensive Reporting** - Generates beautiful HTML and Allure reports with screenshots and test steps.
+- ✅ **Fast Execution** - Reduces run times by caching authentication states automatically.
+- ✅ **Robust Architecture** - Built on the Page Object Model (POM) pattern for scalable and easy-to-maintain code.
 
 ---
 
-## 🌟 Simple Explanation (Non-Technical)
+## 🏗️ Project Folder Structure
 
-### What Does This Framework Do?
+A clean, high-level overview of how the codebase is organized:
 
-Imagine you're testing a website manually:
-1. You open the browser
-2. You log in
-3. You click buttons, fill forms
-4. You check if everything works correctly
-
-**This framework does ALL of that automatically!**
-
-### How Does It Work?
-
-```
-┌─────────────────────────────────────────────┐
-│  1. Framework Reads Test Instructions      │
-│     (What to test?)                         │
-└─────────────────┬───────────────────────────┘
-                  │
-┌─────────────────▼───────────────────────────┐
-│  2. Opens Browser & Logs In                 │
-│     (Uses saved login to go faster)         │
-└─────────────────┬───────────────────────────┘
-                  │
-┌─────────────────▼───────────────────────────┐
-│  3. Performs Actions                        │
-│     (Clicks buttons, fills forms)           │
-└─────────────────┬───────────────────────────┘
-                  │
-┌─────────────────▼───────────────────────────┐
-│  4. Checks Results                          │
-│     (Did it work correctly?)                │
-└─────────────────┬───────────────────────────┘
-                  │
-┌─────────────────▼───────────────────────────┐
-│  5. Creates Report                          │
-│     (Shows what passed/failed)              │
-└─────────────────────────────────────────────┘
-```
-
-### Real Example:
-
-**Manual Testing (You):**
-```
-1. Open browser (1 minute)
-2. Go to website (10 seconds)
-3. Click "Login" (5 seconds)
-4. Enter username/password (10 seconds)
-5. Click "Staff Portal" (5 seconds)
-6. Wait for dashboard (5 seconds)
-7. Click "Programs" menu (5 seconds)
-8. Check if page loads (5 seconds)
-Total Time: ~2 minutes PER TEST
-```
-
-**Automated Testing (This Framework):**
-```
-1. Framework does ALL steps in 10 seconds!
-2. Can run 100 tests while you have coffee ☕
-3. Runs same test every time (no human error)
-4. Creates detailed report automatically
+```text
+ISSI GMS/
+├── src/                          # 🧠 Framework Core (The Engine)
+│   ├── constants/                # Fixed values (URLs, error messages, static paths)
+│   ├── enums/                    # TypeScript enums (User roles, menu items)
+│   ├── fixtures/                 # Playwright fixtures (e.g., auto-login context injection)
+│   ├── pages/                    # Page Objects (Blueprints for web pages e.g., LoginPage)
+│   ├── types/                    # TypeScript definitions/interfaces for strict typing
+│   └── utils/                    # Helper tools (Logger, assertions, data factories)
+│
+├── tests/                        # 🧪 Test Files (The actual test case executions)
+│   ├── auth/                     # Authentication & Login tests
+│   ├── department/               # Department module tests
+│   ├── programs/                 # Programs module tests
+│   └── public/                   # Public-facing page tests
+│
+├── testData/                     # 📂 Data Files (JSON, CSV, or Excel formats)
+├── .auth/                        # 🔐 Cached Logins (Speeds up execution, auto-generated)
+├── allure-results/               # Raw test result outputs for Allure reporting
+├── playwright-report/            # Auto-generated Playwright HTML test reports
+│
+├── bitbucket-pipelines.yml       # ☁️ CI/CD configuration for Bitbucket
+├── playwright.config.ts          # ⚙️ Global Playwright configuration
+├── package.json                  # 📦 Project dependencies and NPM scripts
+└── tsconfig.json                 # 📘 TypeScript compiler configuration
 ```
 
 ---
 
-## 🏗️ Framework Architecture
+## 🚀 Prerequisites
 
-### Folder Structure (Simple Explanation)
-
-```
-PlaywrightProject/
-│
-├── 📁 src/                          # Framework Code (The Engine)
-│   │
-│   ├── 📁 pages/                    # Page Objects (Blueprint of each webpage)
-│   │   ├── base/BasePage.ts        # Common actions (click, type, wait)
-│   │   ├── login/LoginPage.ts      # Login page actions
-│   │   └── programs/               # Programs module pages
-│   │       ├── ProgramsPage.ts     # Program list page
-│   │       ├── AddProgramPage.ts   # Add new program page
-│   │       └── EditProgramPage.ts  # Edit program page
-│   │
-│   ├── 📁 fixtures/                 # Setup & Teardown (Before/After test)
-│   │   └── authFixtures.ts         # Handles login automatically
-│   │
-│   ├── 📁 utils/                    # Helper Tools (Supporting functions)
-│   │   ├── logger.ts               # Prints what's happening
-│   │   ├── assertions.ts           # Checks if test passed
-│   │   ├── dataReader.ts           # Reads test data files
-│   │   └── factories/              # Test Data Generators
-│   │       ├── ProgramFactory.ts   # Creates program test data
-│   │       ├── GrantFactory.ts     # Creates grant test data
-│   │       └── ApplicationFactory.ts # Creates application test data
-│   │
-│   ├── 📁 constants/                # Fixed Values (URLs, paths)
-│   │   └── Paths.ts                # File locations
-│   │
-│   ├── 📁 enums/                    # Lists of Options
-│   │   └── Enums.ts                # User types, menu names, etc.
-│   │
-│   └── 📁 types/                    # Data Structure Definitions
-│       └── index.ts                # TypeScript types
-│
-├── 📁 tests/                        # Test Files (What to test)
-│   ├── programs/                   # Program module tests
-│   │   ├── program.spec.ts         # Current tests
-│   │   ├── week1foundation.spec.ts # Basic tests
-│   │   ├── week2positive.spec.ts   # Happy path tests
-│   │   └── week3negative.spec.ts   # Error handling tests
-│   │
-│   └── datadriven/                 # Data-driven tests
-│       └── dataDriven.spec.ts      # Tests using external data
-│
-├── 📁 testData/                     # Test Data Files
-│   ├── json/data.json              # JSON format data
-│   ├── csv/data.csv                # CSV format data
-│   └── excel/data.xlsx             # Excel format data
-│
-├── 📁 .auth/                        # Saved Login Sessions (Auto-generated)
-│   ├── staffLogin.json             # Staff user session
-│   ├── orgLogin.json               # Organization session
-│   └── individualLogin.json        # Individual session
-│
-├── 📁 allure-results/               # Raw test results (Auto-generated)
-├── 📁 allure-report/                # Beautiful HTML reports (Auto-generated)
-├── 📁 playwright-report/            # Playwright HTML report (Auto-generated)
-│
-├── 📄 .env                          # Environment variables (Passwords, URLs)
-├── 📄 playwright.config.ts          # Framework configuration
-├── 📄 tsconfig.json                 # TypeScript configuration
-└── 📄 package.json                  # Project dependencies
-```
-
-### What Each Folder Does (Simple Terms):
-
-| Folder | What It Does | Example |
-|--------|--------------|---------|
-| `src/pages/` | Contains "blueprints" of web pages | LoginPage knows how to log in |
-| `src/fixtures/` | Sets up tests before they run | Logs in user automatically |
-| `src/utils/` | Helper functions | Logger prints what's happening |
-| `tests/` | Actual test cases | "Test: Create a program" |
-| `testData/` | Data to use in tests | List of usernames/passwords |
-| `.auth/` | Saved login sessions | No need to login every time! |
-| `*-report/` | Test results | Shows what passed/failed |
-
----
-
-## 🚀 Setup Instructions
-
-### Prerequisites (What You Need)
-
+Before you start, make sure you have the following installed on your machine:
 1. **Node.js** (v18 or higher)
-   - Download: https://nodejs.org
-   - Check version: `node --version`
-
+   - Checking your version: `node -v`
 2. **Git** (for version control)
-   - Download: https://git-scm.com
-   - Check version: `git --version`
+   - Checking your version: `git --version`
+3. **VS Code** (highly recommended IDE)
+   - Useful Extensions: *Playwright Test for VSCode*, *ESLint*, *Prettier*.
 
-3. **VS Code** (recommended editor)
-   - Download: https://code.visualstudio.com
+---
 
-### Step-by-Step Setup
+## ⚡ Setup & Installation (5-Minute Quick Start)
 
-#### 1. Clone the Repository
+### 1. Clone the Repository
 ```bash
-# Clone from GitHub
 git clone <your-repo-url>
-
-# Navigate to project
-cd PlaywrightProject
+cd "PlayWright Project/ISSI GMS"
 ```
 
-#### 2. Install Dependencies
+### 2. Install Dependencies
 ```bash
-# Install all required packages
+# Install all required npm packages
 npm install
 
-# Install Playwright browsers
+# Install Playwright specific browsers
 npx playwright install --with-deps
 ```
 
-#### 3. Create Environment File
+### 3. Configure the Environment
+We use a `.env` file to securely store application URLs and user credentials.
 ```bash
-# Copy example file
+# Copy the provided example to create your actual environment file
 cp .env.example .env
-
-# Edit .env with your credentials
-# (Use text editor or VS Code)
 ```
+*(Open the newly created `.env` file in your editor and ensure all usernames, passwords, and URLs are properly configured.)*
 
-**Example .env file:**
+### 4. Verify the Setup
+Let's run a quick smoke test to make sure everything works!
 ```bash
-# Application URL
-ISSI_GMS_URL=https://issigmsdev.issi-software.com
-
-# Staff User Credentials
-STAFF_USERNAME=admin
-STAFF_PASSWORD=Issi@123
-
-# Organization User Credentials
-ORG_USERNAME=orguser
-ORG_PASSWORD=password
-ORG_NAME=Test Organization
-
-# Individual User Credentials
-IND_USERNAME=individual
-IND_PASSWORD=password
-
-# Test Configuration
-HEADLESS=false
-DEBUG=false
-```
-
-#### 4. Verify Setup
-```bash
-# Run a simple test
-npm test -- tests/programs/program.spec.ts
-
-# If browser opens and test runs, setup is complete! ✅
+# Run tests with the @smoke tag in a headed browser (so you can watch it!)
+npm run test:quick
 ```
 
 ---
 
 ## ▶️ How to Run Tests
 
-### Basic Commands
+We have configured several convenient NPM scripts inside `package.json`. You can easily trigger them from your terminal.
 
+### Basic Test Execution Commands
+| Command | What it does |
+|---------|-------------|
+| `npm test` | Runs all tests in headless mode. |
+| `npm run test:headed` | Runs tests in a visible browser window. |
+| `npm run test:ui` | Opens the Playwright interactive UI mode (great for debugging). |
+| `npm run test:debug` | Runs tests with the Playwright Inspector attached. |
+
+### Running Specific Tests
+| Command | What it does |
+|---------|-------------|
+| `npm test tests/programs/program.spec.ts` | Runs a specific test file. |
+| `npm test tests/auth/staff/staff.login.spec.ts -- --grep "TC-STAFF-LOGIN-001" `
+| `npm run test:tag @smoke` | Runs all tests tagged with `@smoke`. |
+| `npm run test:regression` | Runs all tests tagged with `@regression`. |
+
+### Browser Specific Execution
+| Command | What it does |
+|---------|-------------|
+| `npm run test:chrome` | Runs tests only in Chromium (Chrome/Edge). |
+| `npm run test:firefox` | Runs tests only in Firefox. |
+| `npm run test:webkit` | Runs tests only in WebKit (Safari). |
+| `npm run test:all-browsers` | Runs tests across all 3 browsers. |
+
+---
+
+## 📊 Viewing Reports
+
+Playwright out-of-the-box HTML reporting and Allure reporting are both integrated!
+
+**Playwright Default HTML Report**
 ```bash
-# Run all tests
-npm test
-
-# Run tests in headed mode (see browser)
-npm run test:headed
-
-# Run specific test file
-npm test tests/programs/program.spec.ts
-
-# Run tests in debug mode (step-by-step)
-npm run test:debug
-
-# Run tests in UI mode (interactive)
-npm run test:ui
-```
-
-### Advanced Commands
-
-```bash
-# Run tests in Chrome only
-npm run test:chrome
-
-# Run tests in Firefox
-npm run test:firefox
-
-# Run tests with specific tag
-npm run test:tag @smoke
-
-# Run tests in parallel (4 workers)
-npm run test:parallel
-
-# Run tests one at a time
-npm run test:serial
-
-# Run full spec	
-npm run test -- tests/programs/program.spec.ts
-
-# Run single test	
-npm run test -- tests/programs/program.spec.ts -g "TC-PP-001"
-
-# Headed + single test
-npm run test:headed -- tests/programs/program.spec.ts -g "TC-PP-001"
-
-# Run by tag	
-npm run test -- -g "@programs"
-
-```
-
-
-
-
-
-### View Reports
-
-```bash
-# View Playwright HTML report
+# Generates and serves the standard Playwright HTML report
 npm run report
+```
 
-# Generate Allure report
-npm run allure:generate
-
-# Open Allure report in browser
-npm run allure:open
-
-# Generate and serve Allure report
+**Allure Reports (Advanced Reporting)**
+```bash
+# Generate the allure report and directly open it in your browser
 npm run allure:serve
 ```
 
-### Cleanup
-
+**Cleaning Old Reports**
 ```bash
-# Clean test results
-npm run clean
-
-# Clean everything (including auth files)
+# Deletes old test results, reports, and cached authentications
 npm run clean:all
-
-# Clean only auth files
-npm run clean:auth
 ```
 
 ---
 
-## 📝 Creating New Tests
+## 📝 Creating Your First Test
 
-### Simple Template (Copy-Paste This!)
+We use the Page Object Model (POM) pattern. This keeps web locators and UI actions visually separated from the actual test script logic. 
+
+### Step 1: Create a Spec file
+Create `tests/programs/my-first-test.spec.ts` and use the following template:
 
 ```typescript
 import { test, expect } from '@fixtures/authFixtures';
 import { ProgramsPage } from '@pages/programs/ProgramsPage';
 import { Logger } from '@utils/logger';
 
-test.describe('My New Test Suite', () => {
+// Group your tests. Adding tags like @smoke is highly encouraged!
+test.describe('My First Feature Suite @smoke', () => {
   
-  test('TC-001: Test Name Here', async ({ staffPage }) => {
-    Logger.testStart('TC-001: Test Name Here');
+  test('TC-001: My First Test Scenario', async ({ staffPage }) => {
+    Logger.testStart('TC-001: My First Test Scenario');
     
+    // Initialize the Page Object
     const programsPage = new ProgramsPage(staffPage);
     
-    await test.step('Step 1: Navigate somewhere', async () => {
+    await test.step('Step 1: Navigate to the Programs Page', async () => {
       await programsPage.navigateToProgramsPage();
-      Logger.success('Navigated successfully');
     });
     
-    await test.step('Step 2: Do something', async () => {
-      // Your test actions here
-      Logger.info('Doing something...');
+    await test.step('Step 2: Verify correct initialization', async () => {
+      const currentUrl = await programsPage.getCurrentUrl();
+      expect(currentUrl).toContain('program');
+      Logger.success('Programs page successfully validated!');
     });
     
-    await test.step('Step 3: Verify result', async () => {
-      // Your assertions here
-      expect(true).toBeTruthy();
-      Logger.success('Verification passed');
-    });
-    
-    Logger.testEnd('TC-001: Test Name Here');
+    Logger.testEnd('TC-001: My First Test Scenario');
   });
 });
 ```
 
-### Using Test Data Factory
-
-```typescript
-import { ProgramFactory } from '@utils/factories/ProgramFactory';
-
-test('TC-002: Create Program', async ({ staffPage }) => {
-  // Generate unique test data
-  const programData = ProgramFactory.generateBasicInfo();
-  
-  // Use it in your test
-  await addProgramPage.enterProgramCode(programData.programCode);
-  await addProgramPage.enterProgramName(programData.programName);
-  
-  // Data is automatically unique every time!
-  Logger.info(`Created program: ${programData.programName}`);
-});
+### Step 2: Run Your Test
+```bash
+npm test tests/programs/my-first-test.spec.ts
 ```
 
-### Best Practices for Writing Tests
-
-1. **Use descriptive names**
-   ```typescript
-   // ❌ Bad
-   test('test1', async () => {});
-   
-   // ✅ Good
-   test('TC-PL-001: Verify staff can view programs list', async () => {});
-   ```
-
-2. **Use test.step() for clarity**
-   ```typescript
-   await test.step('Navigate to Programs page', async () => {
-     // navigation code
-   });
-   
-   await test.step('Click Add New Program', async () => {
-     // click code
-   });
-   ```
-
-3. **Use factories for test data**
-   ```typescript
-   // ❌ Bad - Hard-coded data
-   await page.fill('#code', 'PROG001');
-   
-   // ✅ Good - Generated data
-   const data = ProgramFactory.generateBasicInfo();
-   await page.fill('#code', data.programCode);
-   ```
-
-4. **Add logging**
-   ```typescript
-   Logger.info('Performing action...');
-   Logger.success('Action completed');
-   Logger.warn('Warning message');
-   Logger.error('Error occurred');
-   ```
-
-## 📊 Framework Capabilities
-
-### What This Framework Can Do:
-
-✅ **Multiple User Roles**
-- Staff users
-- Organization users  
-- Individual users
-- Automatic login for all roles
-
-✅ **Test Data Management**
-- Generate unique test data
-- Read data from JSON/CSV/Excel
-- Track created data for cleanup
-- Support multiple data formats
-
-✅ **Page Coverage**
-- Login flows
-- Programs module (list, add, edit)
-- Grants module (prepared)
-- Applications module (prepared)
-
-✅ **Test Types**
-- Smoke tests (critical paths)
-- Functional tests (complete flows)
-- Negative tests (error handling)
-- Data-driven tests (multiple data sets)
-
-✅ **Reporting**
-- Playwright HTML reports
-- Allure reports with history
-- JSON reports for CI/CD
-- JUnit XML for integrations
-- Screenshots on failure
-- Video recordings
-
-✅ **Advanced Features**
-- Parallel execution
-- Smart retry logic
-- Authentication caching
-- Custom logging
-- Type safety with TypeScript
-- Path aliases for clean imports
-
 ---
 
-## 🎓 Learning Resources
+## 🛡️ Best Practices & Guidelines
 
-### If You Want to Learn More:
+### DO:
+- **Use Fixtures for Reusability:** Always use predefined fixtures like `{ staffPage }`, `{ orgPage }` instead of manually logging in. The framework will automatically fetch the cached login state from `.auth/`.
+- **Use `test.step()`:** Wrap logical blocks of actions inside `test.step()`. This drastically improves report readability.
+- **Use Data Factories:** Avoid hardcoded data. Utilize the generators in `/src/utils/factories` to dynamically generate unique entries.
+  ```typescript
+  const mockProgramData = ProgramFactory.generateBasicInfo();
+  ```
+- **Use Centralized Loggers:** Use `Logger.info()`, `Logger.success()`, `Logger.error()` to accurately stream steps instead of standard console logs.
 
-1. **Playwright Documentation**
-   - https://playwright.dev/docs/intro
-
-2. **TypeScript Handbook**
-   - https://www.typescriptlang.org/docs/handbook/intro.html
-
-3. **Page Object Model**
-   - https://playwright.dev/docs/pom
-
-4. **Allure Reporting**
-   - https://docs.qameta.io/allure/
-
----
-
-## 🤝 Contributing
-
-### How to Add New Tests:
-
-1. Create test file in appropriate folder
-2. Import required page objects and fixtures
-3. Use factories for test data
-4. Follow naming convention: `TC-[MODULE]-[NUMBER]: Description`
-5. Add proper logging
-6. Use test.step() for clarity
-7. Add to appropriate test suite
-
-### Code Review Checklist:
-
-- [ ] Uses fixtures for authentication
-- [ ] Uses factories for test data
-- [ ] Has proper logging
-- [ ] Uses test.step() for readability
-- [ ] Follows naming conventions
-- [ ] Has assertions
-- [ ] No hard-coded data
-- [ ] No hard-coded waits (use Playwright auto-wait)
+### DON'T:
+- ❌ **Hardcode wait times** (e.g., `await page.waitForTimeout(5000)`). Use Playwright's auto-waiting web assertions or locator actionability instead.
+- ❌ **Write Assertions inside Pages.** Keep assertions (`expect()`) strictly inside your test `spec.ts` files. The Page Object files should only contain actions and locators.
+- ❌ **Hardcode sensitive credentials.** Always use the environment variable configuration (`.env`).
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Common Issues:
-
-**1. Tests fail with "Element not found"**
-```bash
-Solution: 
-- Check if locator is correct
-- Add wait before action
-- Verify page loaded completely
-```
-
-**2. Authentication fails**
-```bash
-Solution:
-- Check .env credentials
-- Delete .auth folder and run again
-- Verify application is accessible
-```
-
-**3. Tests are slow**
-```bash
-Solution:
-- Enable parallel execution
-- Check headless mode is enabled
-- Verify network connection
-```
-
-**4. Import errors**
-```bash
-Solution:
-- Run: npm install
-- Check tsconfig.json path aliases
-- Restart VS Code
-```
+| Common Issue | Solution |
+|--------------|----------|
+| **"Cannot find module '@pages/...'"** | Run `npm install`, check the `tsconfig.json` path aliases are correct, or simply restart your IDE TS Server. |
+| **"Authentication failed / Invalid Login"** | Ensure the `.env` credentials are correct. Run `npm run clean:auth` to delete the corrupted auth cache and try running tests again. |
+| **Tests are running too slowly** | Enable workers for parallelism (`npm run test:parallel`) or run tests purely in headless mode. |
+| **"Browser node found / Protocol Error"** | The playwright browser binaries are missing. Run `npx playwright install --with-deps`. |
 
 ---
 
-## 📧 Support
+## 🤝 Contribution Guidelines
 
-For questions or issues:
-1. Check this README first
-2. Review code comments in source files
-3. Check Playwright documentation
-4. Reach out to framework maintainer
-
----
-
-## 🎉 Success Indicators
-
-You'll know the framework is working when:
-- ✅ Tests run without errors
-- ✅ Reports generate automatically
-- ✅ Can run tests in parallel
-- ✅ New tests take <15 minutes to write
-- ✅ Test data is unique every run
-- ✅ Authentication happens automatically
+To help new developers get started and scale appropriately:
+1. **Module First:** Pick up a ticket or select a test module you wish to tackle carefully.
+2. **Strict Pattern:** Keep your `src/pages` objects purely for returning locators and performing UI logical actions.
+3. **Isolate Logic:** Keep assertions (`expect`) strictly inside your tests under `tests/.../**/*.spec.ts`!
+4. **Code Quality:** Run `npm run lint` and `npm run format` locally before submitting a Pull Request.
 
 ---
 
-## 📝 License
+**Happy Testing!** 🚀
 
-This framework is for internal use in testing the ISSI GMS application.
-
----
-
-**Last Updated**: February 2026
-**Framework Version**: 1.0.0
-**Maintained By**: Rajasekhar Maddigalla (QA Lead)
+*Maintained By:* Rajasekhar Maddigalla (QA Lead)  
+*Version:* 1.0.0

@@ -58,8 +58,8 @@ export class DataReader {
         trim: true
       });
       
-      Logger.success(`CSV file read successfully: ${filename} (${data.length} records)`);
-      return data;
+      Logger.success(`CSV file read successfully: ${filename} (${(data as T[]).length} records)`);
+      return data as T[];
     } catch (error) {
       Logger.error(`Failed to read CSV file: ${filename}`, error);
       throw error;

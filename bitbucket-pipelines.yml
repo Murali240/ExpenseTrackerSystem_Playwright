@@ -1,4 +1,5 @@
-image: mcr.microsoft.com/playwright:v1.41.1-jammy
+# Keep in sync with package.json @playwright/test major.minor
+image: mcr.microsoft.com/playwright:v1.57.0-jammy
 
 options:
   size: 2x

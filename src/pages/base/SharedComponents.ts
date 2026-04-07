@@ -21,11 +21,11 @@ export class SharedComponents extends BasePage {
   /* ==================== Login  ==================== */
  
  get userNameField() : Locator {
-    return this.page.locator('input[placeholder="Enter Username"]');
+    return this.page.locator('input[placeholder="Username"]:visible');
   }
 
  get passwordField() : Locator{
-    return this.page.locator('input[placeholder="Enter Password"]');
+    return this.page.locator('input[placeholder="Enter your password"]:visible');
   }
 
  get organizationDropDown() : Locator {
@@ -37,7 +37,7 @@ export class SharedComponents extends BasePage {
   }
 
   get login(): Locator {
-    return this.page.locator('#btn-login');
+    return this.page.locator('button:has-text("LOGIN"):visible');
   }
 
   get registerButton(): Locator {

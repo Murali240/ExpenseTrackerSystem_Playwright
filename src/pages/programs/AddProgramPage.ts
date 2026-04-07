@@ -1,7 +1,7 @@
 import { Page, Locator } from '@playwright/test';
 import { BasePage } from '../base/BasePage';
 import { Logger } from '../../utils/logger';
-import { ProgramData } from '../../utils/facto/ProgramFactory';
+import { ProgramData } from '../../utils/factories/ProgramFactory';
 
 /**
  * Add Program Page Object

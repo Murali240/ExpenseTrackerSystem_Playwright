@@ -1,8 +1,6 @@
 import { SharedComponents } from "@pages/base/SharedComponents";
 import { Page, Locator } from "@playwright/test";
 import { Logger } from "@utils/logger";
-import { Assertions } from "@utils/assertions";
-
 
 /**
  * Public Page (Homepage)
@@ -13,12 +11,14 @@ export class PublicPage extends SharedComponents {
 
     // Locators
   readonly loginButton: Locator;
+  readonly staffLoginButton: Locator;
   
 
     constructor(page :Page){
         super(page);
 
     this.loginButton = page.locator('a:has-text("Login")');
+    this.staffLoginButton = page.locator('*:has-text("Staff Login")').last();
     
     }
 
@@ -37,6 +37,11 @@ export class PublicPage extends SharedComponents {
      async clickOnLogin():Promise<void>{
       await this.clickElement(this.loginButton,'Login button')
       Logger.success('Clicked Login button')
+     }
+
+     async clickOnStaffLogin():Promise<void>{
+      await this.clickElement(this.staffLoginButton,'Staff Login button')
+      Logger.success('Clicked Staff Login button')
      }
     
 }
