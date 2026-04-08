@@ -28,8 +28,8 @@ export class SharedComponents extends BasePage {
     return this.page.locator('input[placeholder="Enter your password"]:visible');
   }
 
- get organizationDropDown() : Locator {
-    return this.page.locator('.input100[id="id_org"]');
+  get organizationDropDown() : Locator {
+    return this.page.locator('#id_org');
   }
 
   get forgotPasswordLink(): Locator {

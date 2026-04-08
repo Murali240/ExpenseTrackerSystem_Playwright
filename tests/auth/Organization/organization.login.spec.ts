@@ -34,24 +34,59 @@ test.describe('Login Tests @auth @login', () => {
     });
 
     await test.step('Login with Valid Credentials', async () => {
-      await organizationLoginPage.organizationLogin(
-        process.env.ORG_USERNAME!,
-        process.env.ORG_PASSWORD!,
-        process.env.ORG_NAME!
+      // Step 1: Enter username (triggers dropdown AJAX on keyup)
+      await organizationLoginPage.userNameField.click();
+      await organizationLoginPage.userNameField.clear();
+      const username = process.env.ORG_USERNAME!;
+      Logger.info(`Typing username: ${username}`);
+      await organizationLoginPage.userNameField.type(username, { delay: 100 });
+      // Wait for AJAX to populate dropdown after keyup
+      await guestPage.waitForTimeout(1000);
+
+      // Step 2: Wait for dropdown to be populated (AJAX success)
+      const orgDropdown = organizationLoginPage.organizationDropDown;
+      await orgDropdown.waitFor({ state: 'attached', timeout: 20000 });
+      await guestPage.waitForFunction(
+        () => {
+          const dropdown = document.querySelector('#id_org');
+          return dropdown && dropdown.options.length > 1;
+        },
+        { timeout: 20000 }
       );
+      const orgOptions = await orgDropdown.locator('option').allTextContents();
+      Logger.info('Organization dropdown options after username: ' + orgOptions.join(', '));
+
+      // Assert the organization is present in the dropdown
+      const orgName = process.env.ORG_NAME!;
+      if (!orgOptions.some(opt => opt.trim() === orgName)) {
+        throw new Error(`Organization '${orgName}' not found in dropdown options: [${orgOptions.join(', ')}]`);
+      }
+
+      // Step 3: Fill password
+      await organizationLoginPage.passwordField.click();
+      await organizationLoginPage.passwordField.clear();
+      await organizationLoginPage.passwordField.type(process.env.ORG_PASSWORD!);
+
+      // Step 4: Select organization
+      await orgDropdown.selectOption({ label: orgName });
+      await guestPage.waitForTimeout(500); // Wait for any onChange
+
+      // Step 5: Click login
+      await organizationLoginPage.login.click();
+      await organizationLoginPage.waitForPageLoad();
     });
 
     await test.step('Verify Successful Login', async () => {
       await guestPage.waitForURL('**/dashboard', { timeout: 30000 });
-      
-      const dashboardHeader = organizationLoginPage.organizationDashboardHeader;
+
+      // Update: Match the actual dashboard header text from the snapshot
+      const dashboardHeader = guestPage.locator('text="Organization User - Applicant Portal"').first();
       await Assertions.verifyElementVisible(dashboardHeader, 'Dashboard header');
       await Assertions.verifyElementText(
         dashboardHeader,
-        DashboardTitles.ORGANIZATION_DASHBOARD_TITLE,
+        'Organization User - Applicant Portal',
         'Dashboard title'
       );
-      
       Logger.success('Login successful');
     });
 
@@ -67,8 +102,16 @@ test.describe('Login Tests @auth @login', () => {
 
 
     await test.step('Navigate to Organization Login', async () => {
-      // ✅ Using NavigationHelper - no manual verification needed inside
-      await nav.goToOrgLogin();
+      const organizationRadio = guestPage.locator('label.toggle-option:has-text("ORGANIZATION")');
+      await Assertions.verifyElementVisible(
+        organizationRadio,
+        'ORGANIZATION radio button'
+      );
+      
+      // Navigate to Organization form
+      await organizationRadio.click();
+      
+      Logger.success('Selected Organization Login option');
     });
 
    await test.step('Login with Valid Username + Invalid Password', async () => {

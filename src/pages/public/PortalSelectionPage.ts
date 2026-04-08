@@ -15,7 +15,7 @@ export class PortalSelectionPage extends SharedComponents {
     constructor(page: Page) {
         super(page);
         this.staffPortalLoginLink = page.locator('a:has-text("Staff Portal Login")');
-        this.individualPortalLoginLink = page.locator('a:has-text("Individual Portal Login")');
+        this.individualPortalLoginLink = page.locator('text="Grantor Portal"').first();
         this.organizationPortalLoginLink = page.locator('a:has-text("Organization Portal Login")');
     }
 
