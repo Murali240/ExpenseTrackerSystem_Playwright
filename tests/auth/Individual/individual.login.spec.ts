@@ -7,7 +7,7 @@ import { NavigationHelper } from '@utils/helpers/navigationHelper';
 import { DashboardTitles, LoginPortalHeaders } from '@enums/Enums';
 import { SharedComponents } from '@pages/base/SharedComponents';
 
-test.describe('Login Tests @auth @login', () => {
+test.describe('Individual Login Tests @auth @login', () => {
 
   test('TC-IND-LOGIN-001: Individual Login with Valid Credentials', async ({individualLoginPage, guestPage, publicPage, portalSelectionPage }) => {
     Logger.testStart('TC-IND-LOGIN-001: Individual Login');

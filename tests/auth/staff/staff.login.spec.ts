@@ -10,8 +10,8 @@ import { SharedComponents } from '@pages/base/SharedComponents';
 test.describe('Login Tests @auth @login', () =>{
 
   // Grantor Portal: Valid Credentials
-  test('TC-STAFF-LOGIN-001: Grantor Login with Valid Credentials', async ({ staffLoginPage,guestPage, publicPage }) => {
-    Logger.testStart('TC-LOGIN-001: Staff Grantor Login');
+  test('TC-STAFF-GRANTOR-LOGIN-001: Grantor Login with Valid Credentials', async ({ staffLoginPage,guestPage, publicPage }) => {
+    Logger.testStart('TC-GRANTOR-LOGIN-001: Staff Grantor Login');
 
     await test.step('Verify and Navigate to Staff Login', async () => {
       // ✅ Verify Login button before clicking

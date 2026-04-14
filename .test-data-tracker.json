@@ -228,6 +228,145 @@
   ],
   "grants": [],
   "applications": [],
-  "users": [],
+  "users": [
+    {
+      "email": "staff1776060174623@automation.test",
+      "password": "Staff60174623@",
+      "userType": "staff",
+      "createdAt": "2026-04-13T06:02:54.626Z"
+    },
+    {
+      "email": "staff1776060952582@automation.test",
+      "password": "Staff60952582@",
+      "userType": "staff",
+      "createdAt": "2026-04-13T06:15:52.583Z"
+    },
+    {
+      "email": "staff1776074340339@automation.test",
+      "password": "Staff74340339@",
+      "userType": "staff",
+      "createdAt": "2026-04-13T09:59:00.341Z"
+    },
+    {
+      "email": "staff1776074725472@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-13T10:05:25.475Z"
+    },
+    {
+      "email": "staff1776075035921@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-13T10:10:35.923Z"
+    },
+    {
+      "email": "staff1776075460195@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-13T10:17:40.197Z"
+    },
+    {
+      "email": "staff1776075796267@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-13T10:23:16.270Z"
+    },
+    {
+      "email": "staff1776143150868@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T05:05:50.869Z"
+    },
+    {
+      "email": "staff1776143204057@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T05:06:44.058Z"
+    },
+    {
+      "email": "staff1776143204058@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T05:06:44.059Z"
+    },
+    {
+      "email": "staff1776143204060@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T05:06:44.061Z"
+    },
+    {
+      "email": "staff1776144237798@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T05:23:57.801Z"
+    },
+    {
+      "email": "staff1776145331844@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T05:42:11.846Z"
+    },
+    {
+      "email": "staff1776145331849@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T05:42:11.850Z"
+    },
+    {
+      "email": "staff1776145331851@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T05:42:11.851Z"
+    },
+    {
+      "email": "staff1776145604124@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T05:46:44.128Z"
+    },
+    {
+      "email": "staff1776145604130@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T05:46:44.131Z"
+    },
+    {
+      "email": "staff1776145604131@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T05:46:44.132Z"
+    },
+    {
+      "email": "staff1776145653002@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T05:47:33.003Z"
+    },
+    {
+      "email": "staff1776145653006@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T05:47:33.007Z"
+    },
+    {
+      "email": "staff1776145653007@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T05:47:33.008Z"
+    },
+    {
+      "email": "staff1776145816980@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T05:50:16.984Z"
+    },
+    {
+      "email": "staff1776146171103@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T05:56:11.107Z"
+    }
+  ],
   "fundingSources": []
 }

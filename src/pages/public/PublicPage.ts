@@ -13,12 +13,14 @@ export class PublicPage extends SharedComponents {
   readonly loginButton: Locator;
   readonly staffLoginButton: Locator;
   
+  
 
     constructor(page :Page){
         super(page);
 
     this.loginButton = page.locator('a:has-text("Login")');
     this.staffLoginButton = page.locator('*:has-text("Staff Login")').last();
+    
     
     }
 

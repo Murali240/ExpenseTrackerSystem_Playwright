@@ -33,4 +33,21 @@ export class StaffLoginPage extends SharedComponents {
     Logger.success('Staff login completed');
   }
 
+/**
+ * Click on staff registration
+ */
+
+ async clickRegisterButton(portal: string = 'Grantor Portal'): Promise<void> {
+   
+  Logger.step(`Performing staff "${portal}" Registration`);
+  
+  const radioLocator = this.page.locator(`div.portal-option:has(span.portal-option-title:has-text("${portal}"))`);
+    
+  if (await radioLocator.isVisible({ timeout: 5000 }).catch(() => false)) {
+        await radioLocator.click();
+    }
+    await this.clickElement(this.registerButton,`${portal} Register button`);
+    await this.waitForPageLoad();
+    Logger.success(`Clicked on ${portal} Register button`);
+  }
 }
