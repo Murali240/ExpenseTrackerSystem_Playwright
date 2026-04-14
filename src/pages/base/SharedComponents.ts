@@ -24,7 +24,7 @@ export class SharedComponents extends BasePage {
     return this.page.locator('input[placeholder="Username"]:visible');
   }
 
- get passwordField() : Locator{
+ get passwordField() : Locator {
     return this.page.locator('input[placeholder="Enter your password"]:visible');
   }
 
@@ -41,7 +41,7 @@ export class SharedComponents extends BasePage {
   }
 
   get registerButton(): Locator {
-  return this.page.locator('');
+  return this.page.locator('button:has-text("Register"):visible');
   }
 
   get loginPortalHeader(): Locator {
@@ -377,8 +377,8 @@ export class SharedComponents extends BasePage {
    * Common alert/message elements
    */
   getSuccessMessage(): Locator {
-    return this.page.locator('.alert-success, .success-message, .toast-success').first();
-  }
+  return this.page.locator('.swal2-html-container').first();
+}
 
   getErrorMessage(): Locator {
     return this.page.locator('.alert-danger, .error-message, .toast-error, .alert-error').first();
@@ -391,6 +391,15 @@ export class SharedComponents extends BasePage {
   getInfoMessage(): Locator {
     return this.page.locator('.alert-info, .info-message, .toast-info').first();
   }
+
+  /**
+   * Get Validation message text
+   */
+  async getValidationMessage(locator: Locator): Promise<string> {
+  return await locator.evaluate((el) => {
+    return (el as HTMLInputElement).validationMessage;
+  });
+}
 
   /**
    * Get success message text
