@@ -18,35 +18,6 @@ export class SharedComponents extends BasePage {
     super(page);
   }
 
-  /* ==================== Login  ==================== */
- 
- get userNameField() : Locator {
-    return this.page.locator('input[placeholder="Username"]:visible');
-  }
-
- get passwordField() : Locator {
-    return this.page.locator('input[placeholder="Enter your password"]:visible');
-  }
-
-  get organizationDropDown() : Locator {
-    return this.page.locator('#id_org');
-  }
-
-  get forgotPasswordLink(): Locator {
-    return this.page.locator('');
-  }
-
-  get login(): Locator {
-    return this.page.locator('button:has-text("LOGIN"):visible');
-  }
-
-  get registerButton(): Locator {
-  return this.page.locator('button:has-text("Register"):visible');
-  }
-
-  get loginPortalHeader(): Locator {
-    return this.page.locator('.login100-form-title-1');
-  }
   /* ==================== Menu Navigation Methods ==================== */
 
   /**

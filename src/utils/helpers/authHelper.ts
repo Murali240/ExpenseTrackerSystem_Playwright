@@ -2,7 +2,6 @@
 
 import { Page } from '@playwright/test';
 import { PublicPage } from '@pages/public/PublicPage';
-import { PortalSelectionPage } from '@pages/public/PortalSelectionPage';
 import { UserRole } from '../../types';
 import { Logger } from '../logger';
 import { StaffLoginPage } from '@pages/auth/staff/StaffLoginPage';
@@ -17,7 +16,6 @@ import { IndividualLoginPage } from '@pages/auth/individual/IndividualLoginPage'
  */
 export async function loginAs(page: Page, role: UserRole): Promise<void> {
   const publicPage = new PublicPage(page);
-  const portalSelectionPage = new PortalSelectionPage(page);
 
   try {
     Logger.info(`Attempting login as: ${role}`);

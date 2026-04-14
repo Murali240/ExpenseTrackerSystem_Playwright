@@ -1,10 +1,10 @@
-import { SharedComponents } from "@pages/base/SharedComponents";
+import { PublicPage } from "@pages/public/PublicPage";
 import { Locator } from "@playwright/test";
 import { DashboardTitles } from '@enums/Enums';
 import { Logger } from "@utils/logger";
 
 
-export class IndividualLoginPage extends SharedComponents {
+export class IndividualLoginPage extends PublicPage {
 
 get individualDashboardHeader(): Locator {
     return this.getDashboardTitle(DashboardTitles.INDIVIDUAL_DASHBOARD_TITLE);

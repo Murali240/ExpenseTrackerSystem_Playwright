@@ -2,18 +2,34 @@
 
 import { test, expect } from '@fixtures/AuthFixtures';
 import { Logger } from '@utils/logger';
+import { Assertions } from '@utils/assertions';
+import { SharedComponents } from '@pages/base/SharedComponents';
 
 test.describe('Organization Registration @auth @registration @organization', () => {
 
   test('TC-REG-ORG-001: Register New Organization', async ({ guestPage }) => {
     Logger.testStart('TC-REG-ORG-001: Register New Organization');
 
-    await test.step('Navigate to Organization Registration', async () => {
-      // ✅ Using guestPage - no authentication
-      await guestPage.goto('/organization/register');
-    });
+     await test.step('Verify and Navigate to Organization Login', async () => {
+          const organizationRadio = guestPage.locator('label.toggle-option:has-text("ORGANIZATION")');
+          await Assertions.verifyElementVisible(
+            organizationRadio,
+            'ORGANIZATION radio button'
+          );
+          
+          // Navigate to Organization form
+          await organizationRadio.click();
+          
+          Logger.success('Selected Organization Login option');
+        });
+
+    await test.step(' Click on Organization Register buton', async()=>{
+       await guestPage.click(sharedComponents.registerButton)
+    })   
 
     await test.step('Fill Organization Details', async () => {
+
+      
       await guestPage.fill('input[name="orgName"]', 'Test Org ' + Date.now());
       await guestPage.fill('input[name="ein"]', '12-3456789');
       await guestPage.fill('input[name="address"]', '123 Test St');

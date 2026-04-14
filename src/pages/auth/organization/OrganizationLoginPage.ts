@@ -1,11 +1,11 @@
 // src/pages/auth/organization/OrganizationLoginPage.ts
 
-import { SharedComponents } from "@pages/base/SharedComponents";
+import { PublicPage } from "@pages/public/PublicPage";
 import { Page, Locator } from "@playwright/test";
 import { DashboardTitles } from '@enums/Enums';
 import { Logger } from "@utils/logger";
 
-export class OrganizationLoginPage extends SharedComponents {
+export class OrganizationLoginPage extends PublicPage {
 
   constructor(page: Page) {
     super(page);
@@ -109,5 +109,18 @@ export class OrganizationLoginPage extends SharedComponents {
     await this.waitForPageLoad();
     
     Logger.success('✅ Organization login completed');
+  }
+
+  async verifySuccessfulLogin(): Promise<void> {
+    Logger.step('Verifying successful organization login');
+    await this.page.waitForURL('**/dashboard', { timeout: 30000 });
+    const dashboardHeader = this.page.locator('text="Organization User - Applicant Portal"').first();
+    await this.verifyElementVisible(dashboardHeader, 'Dashboard header');
+    await this.verifyElementText(
+      dashboardHeader,
+      'Organization User - Applicant Portal',
+      'Dashboard title'
+    );
+    Logger.success('Verified successful login');
   }
 }
