@@ -366,6 +366,42 @@
       "password": "Issi@123",
       "userType": "staff",
       "createdAt": "2026-04-14T05:56:11.107Z"
+    },
+    {
+      "email": "staff1776150388283@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T07:06:28.292Z"
+    },
+    {
+      "email": "staff1776150785694@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T07:13:05.695Z"
+    },
+    {
+      "email": "staff1776150863683@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T07:14:23.686Z"
+    },
+    {
+      "email": "staff1776151032736@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T07:17:12.736Z"
+    },
+    {
+      "email": "staff1776151520793@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T07:25:20.796Z"
+    },
+    {
+      "email": "staff1776151553439@automation.test",
+      "password": "Issi@123",
+      "userType": "staff",
+      "createdAt": "2026-04-14T07:25:53.441Z"
     }
   ],
   "fundingSources": []
