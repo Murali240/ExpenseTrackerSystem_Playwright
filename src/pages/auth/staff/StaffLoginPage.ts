@@ -26,7 +26,7 @@ export class StaffLoginPage extends PublicPage {
 
 
     async selectGranteePortalOption(): Promise<void> {
-      await this.clickElement(this.grantorRadioButton, 'Grantee Portal Option')
+      await this.clickElement(this.granteeRadioButton, 'Grantee Portal Option')
       Logger.info('Selected Grantee Portal Option')
     }
 
