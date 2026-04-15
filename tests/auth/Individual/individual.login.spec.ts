@@ -3,36 +3,35 @@
 import { test } from '@fixtures/AuthFixtures';
 import { Assertions } from '@utils/assertions';
 import { Logger } from '@utils/logger';
-import { NavigationHelper } from '@utils/helpers/navigationHelper';
-import { DashboardTitles, LoginPortalHeaders } from '@enums/Enums';
-import { SharedComponents } from '@pages/base/SharedComponents';
+
 
 test.describe('Individual Login Tests @auth @login', () => {
 
+    //Common Step: Navigate to Individual Login
+   test.beforeEach(async ({ publicPage }) => {
+    Logger.testStart('Common Step: Navigate to Individual Login');
+
+    // Navigate to Individual Login option
+    await test.step('Verify and Navigate to Individual Login', async () => {
+       await Assertions.verifyElementVisible(publicPage.individualRadio, 'INDIVIDUAL radio button');
+       await publicPage.navigateToIndividualLogin();
+    });
+
+      //Verify the fields in Individual Login portal
+    await test.step('Verify Individual Login Page', async () => {
+      
+      await Assertions.verifyElementVisible(publicPage.userNameField, 'Username field');
+      await Assertions.verifyElementVisible(publicPage.passwordField, 'Password field');
+      await Assertions.verifyElementVisible(publicPage.loginButton, 'Login button');
+    });
+
+  });
+
+  // Test Case -001 Individual Login Test with Valid credentials 
   test('TC-IND-LOGIN-001: Individual Login with Valid Credentials', async ({individualLoginPage, guestPage, publicPage, portalSelectionPage }) => {
     Logger.testStart('TC-IND-LOGIN-001: Individual Login');
-
-    await test.step('Verify and Navigate to Individual Login', async () => {
-      const individualRadio = guestPage.locator('label.toggle-option:has-text("INDIVIDUAL")');
-      await Assertions.verifyElementVisible(
-        individualRadio,
-        'INDIVIDUAL radio button'
-      );
-      
-      // Navigate to Individual form
-      await individualRadio.click();
-      
-      Logger.success('Selected Individual Login option');
-    });
-
-    await test.step('Verify Individual Login Page', async () => {
-      const sharedComponents = new SharedComponents(guestPage);
-      
-      await Assertions.verifyElementVisible(sharedComponents.userNameField, 'Username field');
-      await Assertions.verifyElementVisible(sharedComponents.passwordField, 'Password field');
-      await Assertions.verifyElementVisible(sharedComponents.login, 'Login button');
-    });
-
+    
+    // Do individual login with Valid credentials 
     await test.step('Login with Valid Credentials', async () => {
       await individualLoginPage.individualLogin(
         process.env.IND_USERNAME!,
@@ -40,53 +39,18 @@ test.describe('Individual Login Tests @auth @login', () => {
       );
     });
 
+    // Verify Dashboard Header after successful login
     await test.step('Verify Successful Login', async () => {
-      await guestPage.waitForURL('**/dashboard', { timeout: 30000 });
-
-      // Update: Match the actual dashboard header text from the snapshot
-      const dashboardHeader = guestPage.locator('text="Individual User - Applicant Portal"').first();
-      await Assertions.verifyElementVisible(dashboardHeader, 'Dashboard header');
-      await Assertions.verifyElementText(
-        dashboardHeader,
-        'Individual User - Applicant Portal',
-        'Dashboard title'
-      );
-      Logger.success('Login successful');
-    });
-
-    Logger.testEnd('TC-IND-LOGIN-001');
+      await individualLoginPage.verifyIndividualSuccessfulLogin();
   });
+});
 
 
-  test('TC-IND-NEG-LOGIN-002: Individual Login with Invalid Credentials', async ({ individualLoginPage, guestPage }) => {
+// Test Case -002 Individual Login Test with invalid Valid credentials 
+  test('NEG-TC-IND-LOGIN-002: Individual Login with Invalid Credentials', async ({ individualLoginPage, guestPage }) => {
     Logger.testStart('TC-LOGIN-002: Invalid Login');
 
-    const nav = new NavigationHelper(guestPage);
-   // const staffLoginPage = new StaffLoginPage(guestPage);
-
-    await test.step('Navigate to Individual Login', async () => {
-
-      const individualRadio = guestPage.locator('label.toggle-option:has-text("INDIVIDUAL")');
-      await Assertions.verifyElementVisible(
-        individualRadio,
-        'INDIVIDUAL radio button'
-      );
-      
-      // Navigate to Individual form
-      await individualRadio.click();
-      
-      Logger.success('Selected Individual Login option');
-
-    });
-
-     await test.step('Verify Individual Login Page', async () => {
-      const sharedComponents = new SharedComponents(guestPage);
-      
-      await Assertions.verifyElementVisible(sharedComponents.userNameField, 'Username field');
-      await Assertions.verifyElementVisible(sharedComponents.passwordField, 'Password field');
-      await Assertions.verifyElementVisible(sharedComponents.login, 'Login button');
-    });
-
+    // Do individual login with In Valid credentials 
     await test.step('Login with Invalid Credentials', async () => {
       await individualLoginPage.individualLogin(
         process.env.INVALID_USERNAME!,
@@ -94,6 +58,7 @@ test.describe('Individual Login Tests @auth @login', () => {
       );
     });
 
+    // Verify error message on login failure .
     await test.step('Verify Error Message', async () => {
       const errorMessage = guestPage.locator('.alert-danger');
       
@@ -105,6 +70,6 @@ test.describe('Individual Login Tests @auth @login', () => {
       );
     });
 
-    Logger.testEnd('TC-LOGIN-002');
+    Logger.testEnd('NEG-TC-IND-LOGIN-002');
   });
 });

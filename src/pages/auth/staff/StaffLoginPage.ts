@@ -1,13 +1,16 @@
 import { PublicPage } from "@pages/public/PublicPage";
 import { Locator, Page } from "@playwright/test";
 import { Logger } from "@utils/logger";
-import { DashboardTitles } from '@enums/Enums';
+import { DashboardHeaders } from '@enums/Enums';
 
 export class StaffLoginPage extends PublicPage {
     
     
     readonly grantorRadioButton: Locator;
     readonly granteeRadioButton: Locator;
+    readonly grantorDashboardHeader: Locator;
+    readonly granteeDashboardHeader: Locator;
+
 
 
     constructor(page: Page){
@@ -15,6 +18,10 @@ export class StaffLoginPage extends PublicPage {
 
       this.grantorRadioButton = this.page.locator(`div.portal-option:has(span.portal-option-title:has-text("Grantor Portal"))`);
       this.granteeRadioButton = this.page.locator(`div.portal-option:has(span.portal-option-title:has-text("Grantee Portal"))`);
+      
+      this.grantorDashboardHeader = this.page.locator('.top-title.d-display .header-subtitle:has-text("Staff User - Grantor Portal")').first();
+      this.granteeDashboardHeader = this.page.locator('.top-title.d-display .header-subtitle:has-text("Staff User - Grantee Portal")').first();
+
     }
 
 
@@ -50,33 +57,6 @@ export class StaffLoginPage extends PublicPage {
     await this.waitForPageLoad();
     Logger.success('Grantee login completed');
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  /* ==================== Get Dashboard Titles Methods ==================== */
-  
-     get staffGrantorDashboardHeader(): Locator {
-      return this.getDashboardTitle(DashboardTitles.STAFF_GRANTOR_DASHBOARD_TITLE);
-    }
-
-    get staffGranteeDashboardHeader(): Locator {
-      return this.getDashboardTitle(DashboardTitles.STAFF_GRANTEE_DASHBOARD_TITLE);
-    }
-
-
-   
-
 
 
 /**

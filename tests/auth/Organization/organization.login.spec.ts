@@ -1,24 +1,35 @@
-// tests/auth/login.spec.ts - CLEANEST VERSION
-
 import { test } from '@fixtures/AuthFixtures';
 import { Assertions } from '@utils/assertions';
 import { Logger } from '@utils/logger';
 
 test.describe('Login Tests @auth @login', () => {
 
+
+    //Common Step: Navigate to Organization Login
+   test.beforeEach(async ({ publicPage }) => {
+    Logger.testStart('Common Step: Navigate to Organization Login');
+
+    // Navigate to Organization Login option
+    await test.step('Verify and Navigate to Organization Login', async () => {
+       await Assertions.verifyElementVisible(publicPage.organizationRadio, 'ORGANIZATION radio button');
+       await publicPage.navigateToOrganizationLogin();
+    });
+
+      //Verify the fields in Organization Login portal
+    await test.step('Verify Organization Login Page', async () => {
+      
+      await Assertions.verifyElementVisible(publicPage.userNameField, 'Username field');
+      await Assertions.verifyElementVisible(publicPage.passwordField, 'Password field');
+      await Assertions.verifyElementVisible(publicPage.loginButton, 'Login button');
+    });
+
+  });
+
+  // Test Case -001 Organization Login Test with Valid credentials 
   test('TC-ORG-LOGIN-001: Organization Login with Valid Credentials', async ({ organizationLoginPage, guestPage, publicPage }) => {
     Logger.testStart('TC-LOGIN-001: Organization Login');
 
-    await test.step('Navigate to Organization Login', async () => {
-      await publicPage.navigateToOrganizationLogin();
-    });
-
-    await test.step('Verify Organization Login Page', async () => {
-      await Assertions.verifyElementVisible(publicPage.userNameField, 'Username field');
-      await Assertions.verifyElementVisible(publicPage.passwordField, 'Password field');
-      await Assertions.verifyElementVisible(publicPage.login, 'Login button');
-    });
-
+    // Do login with valid Organization Credentials
     await test.step('Login with Valid Credentials', async () => {
       await organizationLoginPage.organizationLogin(
         process.env.ORG_USERNAME!,
@@ -28,20 +39,17 @@ test.describe('Login Tests @auth @login', () => {
     });
 
     await test.step('Verify Successful Login', async () => {
-      await organizationLoginPage.verifySuccessfulLogin();
+      await organizationLoginPage.verifyOrganizationSuccessfulLogin();
     });
 
-    Logger.testEnd('TC-LOGIN-001');
+    Logger.testEnd('TC-ORG-LOGIN-001');
   });
 
-
-  test('TC-ORG-NEG-LOGIN-002: Organization Login with valid Username + invalid Password', async ({ organizationLoginPage, guestPage, publicPage }) => {
+  // Test Case -002 Organization Login Test with inValid credentials 
+  test('NEG-TC-ORG-LOGIN-002: Organization Login with valid Username + invalid Password', async ({ organizationLoginPage, guestPage, publicPage }) => {
     Logger.testStart('TC-LOGIN-002: Invalid Login');
 
-    await test.step('Navigate to Organization Login', async () => {
-      await publicPage.navigateToOrganizationLogin();
-    });
-
+    // Do login with invalid Organization Credentials
    await test.step('Login with Valid Username + Invalid Password', async () => {
       await organizationLoginPage.organizationLogin(
         process.env.ORG_USERNAME!,
@@ -50,6 +58,7 @@ test.describe('Login Tests @auth @login', () => {
       );
     });
 
+    // Verify error message on login failure .
     await test.step('Verify Error Message', async () => {
       const errorMessage = guestPage.locator('.alert-danger');
       
@@ -61,6 +70,6 @@ test.describe('Login Tests @auth @login', () => {
       );
     });
 
-    Logger.testEnd('TC-LOGIN-002');
+    Logger.testEnd('NEG-TC-ORG-LOGIN-002');
   });
 });

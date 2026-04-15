@@ -2,18 +2,18 @@
 
 import { PublicPage } from "@pages/public/PublicPage";
 import { Page, Locator } from "@playwright/test";
-import { DashboardTitles } from '@enums/Enums';
+import { DashboardHeaders } from '@enums/Enums';
 import { Logger } from "@utils/logger";
 
 export class OrganizationLoginPage extends PublicPage {
 
+  readonly organizationDashboardHeader: Locator;
+
   constructor(page: Page) {
     super(page);
+    this.organizationDashboardHeader = this.page.locator('text="Organization User - Applicant Portal"').first();
   }
 
-  get organizationDashboardHeader(): Locator {
-    return this.getDashboardTitle(DashboardTitles.ORGANIZATION_DASHBOARD_TITLE);
-  }
 
   /**
    * Wait for organization dropdown to load options and select
@@ -105,22 +105,21 @@ export class OrganizationLoginPage extends PublicPage {
     }
     
     // ✅ Click login button
-    await this.clickElement(this.login, 'Login submit button');
+    await this.clickElement(this.loginButton, 'Login submit button');
     await this.waitForPageLoad();
     
     Logger.success('✅ Organization login completed');
   }
 
-  async verifySuccessfulLogin(): Promise<void> {
+  async verifyOrganizationSuccessfulLogin(): Promise<void> {
     Logger.step('Verifying successful organization login');
     await this.page.waitForURL('**/dashboard', { timeout: 30000 });
-    const dashboardHeader = this.page.locator('text="Organization User - Applicant Portal"').first();
-    await this.verifyElementVisible(dashboardHeader, 'Dashboard header');
+    await this.verifyElementVisible(this.organizationDashboardHeader, 'Dashboard header');
     await this.verifyElementText(
-      dashboardHeader,
-      'Organization User - Applicant Portal',
+      this.organizationDashboardHeader,DashboardHeaders.ORGANIZATION_DASHBOARD_HEADER,
       'Dashboard title'
     );
-    Logger.success('Verified successful login');
+    Logger.success('Verified successful Organization login');
   }
+
 }

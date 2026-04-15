@@ -30,11 +30,11 @@ export enum SubMenu {
   MASTER_FUNDING_SOURCES = 'Master Funding Sources'
 }
 
-export enum DashboardTitles {
-  STAFF_GRANTOR_DASHBOARD_TITLE = 'Staff User - Grantor Portal',
-  STAFF_GRANTEE_DASHBOARD_TITLE = 'Staff User - Grantee Portal',
-  ORGANIZATION_DASHBOARD_TITLE = 'Organization Portal',
-  INDIVIDUAL_DASHBOARD_TITLE = 'Individual Portal'
+export enum DashboardHeaders {
+  STAFF_GRANTOR_DASHBOARD_HEADER = 'Staff User - Grantor Portal',
+  STAFF_GRANTEE_DASHBOARD_HEADER = 'Staff User - Grantee Portal',
+  ORGANIZATION_DASHBOARD_HEADER= 'Organization User - Applicant Portal',
+  INDIVIDUAL_DASHBOARD_HEADER = 'Individual User - Applicant Portal'
 }
 
 export enum PageHeaders {

@@ -57,12 +57,6 @@ export class SharedComponents extends BasePage {
     await this.waitForPageLoad();
   }
 
-  /* ==================== Dashboard Titles ==================== */
-
-  getDashboardTitle(dashboardText :string) :Locator {
-   return this.page.locator(`.top-title.d-display .header-subtitle:has-text("${dashboardText}")`);
-  }
-
   
 
 /* ==================== Headder and Add New Records ==================== */
