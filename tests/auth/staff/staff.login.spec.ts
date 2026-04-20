@@ -132,8 +132,8 @@ test.describe('Staff Login Tests @auth @login', () => {
     // Do login with valid credentials
     await test.step('Login with Valid Grantee Credentials', async () => {
       await staffLoginPage.doGranteeLogin(
-        process.env.GRANTEE_USERNAME!,
-        process.env.GRANTEE_PASSWORD!,
+        process.env.STAFF_USERNAME!,
+        process.env.STAFF_PASSWORD!,
       );
 
     });

@@ -66,6 +66,7 @@ async doStaffLogin(
   Logger.step(`Performing ${staffRole} login`);
 
   if (staffRole === 'Grantor') {
+
     await this.selectGrantorPortalOption();
     await this.doGrantorLogin(username, password);
 

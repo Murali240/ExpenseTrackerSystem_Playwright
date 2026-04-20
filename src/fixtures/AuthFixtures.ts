@@ -30,10 +30,7 @@ type Fixtures = {
   staffLoginPage:StaffLoginPage;
   organizationLoginPage:OrganizationLoginPage;
   individualLoginPage:IndividualLoginPage;
-
-
   publicPage: PublicPage;
-  portalSelectionPage: PortalSelectionPage;
   programsPage: ProgramsPage;
   addProgramPage: AddProgramPage;
   editProgramPage: EditProgramPage;
@@ -224,10 +221,6 @@ export const test = base.extend<Fixtures>({
 
   publicPage: async ({ guestPage }, use) => {
     await use(new PublicPage(guestPage));
-  },
-
-  portalSelectionPage: async ({ guestPage }, use) => {
-    await use(new PortalSelectionPage(guestPage));
   },
 
   programsPage: async ({ grantorPage }, use) => {

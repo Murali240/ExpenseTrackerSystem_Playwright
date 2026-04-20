@@ -33,17 +33,17 @@ export async function loginAs(page: Page, role: UserRole): Promise<void> {
       
       case 'Grantor':
         await staffLoginPage.doStaffLogin(
-          process.env.Grantor_USERNAME!,
-          process.env.Grantor_PASSWORD!,
-          'Grantor Portal'
+         process.env.STAFF_USERNAME!,
+         process.env.STAFF_PASSWORD!,
+          'Grantor'
         );
         break;
 
       case 'Grantee':
         await staffLoginPage.doStaffLogin(
-          process.env.Grantee_USERNAME!,
-          process.env.Grantee_PASSWORD!,
-          'Grantee Portal'
+          process.env.STAFF_USERNAME!,
+          process.env.STAFF_PASSWORD!,
+          'Grantee'
         );
         break;
 
