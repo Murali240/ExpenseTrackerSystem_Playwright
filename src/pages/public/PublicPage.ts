@@ -107,13 +107,13 @@ export class PublicPage extends SharedComponents {
 
      // Combined method for navigation to registration
      async navigateToOrganizationRegistration(): Promise<void> {
-       await this.selectOrganizationLoginOption();
+      // await this.selectOrganizationLoginOption();
        await this.clickRegister();
        Logger.success('Navigated to Organization Registration Page');
      }
     
      async navigateToIndividualRegistratoin(): Promise<void> {
-      await this.selectIndividualLoginOption();
+     // await this.selectIndividualLoginOption();
       await this.clickRegister();
       Logger.success('Navigated to Individual Registration Page');
      }

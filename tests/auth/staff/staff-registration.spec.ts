@@ -1,10 +1,9 @@
 import { test, expect } from '@fixtures/AuthFixtures';
 import { Logger } from '@utils/logger';
 import { Assertions } from '@utils/assertions';
-import { StaffLoginPage } from '@pages/auth/staff/StaffLoginPage';
 import { StaffRegistrationPage } from '@pages/auth/staff/StaffRegistrationPage';
 import { StaffUserFactory } from '@utils/factories/StaffUserFactory';
-import { SharedComponents } from '@pages/base/SharedComponents';
+
 
 test.describe('Staff Registration @auth @registration @staff', () => {
 
@@ -13,6 +12,7 @@ test.describe('Staff Registration @auth @registration @staff', () => {
 
     // Generate test data using factory
     const staffData = StaffUserFactory.generateStaffUser();
+    
     Logger.info(`Generated staff user: ${staffData.email}`);
 
     const staffRegistrationPage = new StaffRegistrationPage(guestPage);

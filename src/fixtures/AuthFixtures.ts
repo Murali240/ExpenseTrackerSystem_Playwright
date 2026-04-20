@@ -17,7 +17,8 @@ import { IndividualLoginPage } from '@pages/auth/individual/IndividualLoginPage'
 /* ==================== TYPES ==================== */
 type Fixtures = {
   // ✅ Authenticated fixtures (with session)
-  staffPage: Page;
+  grantorPage: Page;
+  granteePage: Page;
   orgPage: Page;
   individualPage: Page;
 
@@ -80,7 +81,7 @@ function deleteStaleAuthFile(authFile: string, role: string): void {
 async function createAuthenticatedPage(
   browser: any,
   authFile: string,
-  role: 'staff' | 'Organization' | 'individual'
+  role: 'Grantor' | 'Grantee' |'Organization' | 'individual'
 ): Promise<Page> {
   ensureAuthDirectoryExists();
 
@@ -149,15 +150,26 @@ export const test = base.extend<Fixtures>({
 
   /* ==================== AUTHENTICATED FIXTURES ==================== */
 
-  staffPage: async ({ browser }, use) => {
+  grantorPage: async ({ browser }, use) => {
     const page = await createAuthenticatedPage(
       browser,
       Paths.STAFF_AUTH_FILE,
-      'staff'
+      'Grantor'
     );
     await use(page);
     await page.context().close();
-    Logger.info('🧹 Staff user fixture cleaned up');
+    Logger.info('🧹 Grantor user fixture cleaned up');
+  },
+
+  granteePage: async ({ browser }, use) => {
+    const page = await createAuthenticatedPage(
+      browser,
+      Paths.STAFF_AUTH_FILE,
+      'Grantor'
+    );
+    await use(page);
+    await page.context().close();
+    Logger.info('🧹 Grantee user fixture cleaned up');
   },
 
   orgPage: async ({ browser }, use) => {
@@ -218,16 +230,16 @@ export const test = base.extend<Fixtures>({
     await use(new PortalSelectionPage(guestPage));
   },
 
-  programsPage: async ({ staffPage }, use) => {
-    await use(new ProgramsPage(staffPage));
+  programsPage: async ({ grantorPage }, use) => {
+    await use(new ProgramsPage(grantorPage));
   },
 
-  addProgramPage: async ({ staffPage }, use) => {
-    await use(new AddProgramPage(staffPage));
+  addProgramPage: async ({ grantorPage }, use) => {
+    await use(new AddProgramPage(grantorPage));
   },
 
-  editProgramPage: async ({ staffPage }, use) => {
-    await use(new EditProgramPage(staffPage));
+  editProgramPage: async ({ grantorPage }, use) => {
+    await use(new EditProgramPage(grantorPage));
   },
 });
 

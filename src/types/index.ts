@@ -12,7 +12,7 @@ export interface OrganizationCredentials extends UserCredentials {
   organization: string;
 }
 
-export type UserRole = 'staff' | 'Organization' | 'individual';
+export type UserRole = 'Grantor' | 'Grantee' | 'Organization' | 'individual';
 
 export interface TestData {
   username: string;

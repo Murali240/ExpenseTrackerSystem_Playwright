@@ -10,8 +10,7 @@ export class StaffLoginPage extends PublicPage {
     readonly granteeRadioButton: Locator;
     readonly grantorDashboardHeader: Locator;
     readonly granteeDashboardHeader: Locator;
-
-
+    
 
     constructor(page: Page){
       super(page)
@@ -21,7 +20,7 @@ export class StaffLoginPage extends PublicPage {
       
       this.grantorDashboardHeader = this.page.locator('.top-title.d-display .header-subtitle:has-text("Staff User - Grantor Portal")').first();
       this.granteeDashboardHeader = this.page.locator('.top-title.d-display .header-subtitle:has-text("Staff User - Grantee Portal")').first();
-
+ 
     }
 
 
@@ -58,6 +57,28 @@ export class StaffLoginPage extends PublicPage {
     Logger.success('Grantee login completed');
   }
 
+async doStaffLogin(
+  username: string,
+  password: string,
+  staffRole: string = 'Grantor'
+): Promise<void> {
+
+  Logger.step(`Performing ${staffRole} login`);
+
+  if (staffRole === 'Grantor') {
+    await this.selectGrantorPortalOption();
+    await this.doGrantorLogin(username, password);
+
+  } else if (staffRole === 'Grantee') {
+    await this.selectGranteePortalOption();
+    await this.doGranteeLogin(username, password);
+
+  } else {
+    throw new Error(`Invalid staff role provided: ${staffRole}`);
+  }
+
+  Logger.success(`${staffRole} login completed successfully`);
+}
 
 /**
  * Click on staff registration

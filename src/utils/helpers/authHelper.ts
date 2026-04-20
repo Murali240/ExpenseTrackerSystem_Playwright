@@ -19,30 +19,37 @@ export async function loginAs(page: Page, role: UserRole): Promise<void> {
 
   try {
     Logger.info(`Attempting login as: ${role}`);
-    
+
     // Navigate to public page
     await publicPage.goto();
-    
+
     // Click Login button
-    await publicPage.clickOnLogin();
+    await publicPage.clickOnStaffLogin();
 
     // Select portal and login based on role
-    switch (role) {
-      case 'staff':
-        const staffLoginPage = new StaffLoginPage(page)
+    const staffLoginPage = new StaffLoginPage(page);
 
-        await portalSelectionPage.clickOnStaffPortalLoginLink();
-        await staffLoginPage.staffLogin(
-          process.env.STAFF_USERNAME!,
-          process.env.STAFF_PASSWORD!
+    switch (role) {
+      
+      case 'Grantor':
+        await staffLoginPage.doStaffLogin(
+          process.env.Grantor_USERNAME!,
+          process.env.Grantor_PASSWORD!,
+          'Grantor Portal'
         );
-        Logger.success('✅ Staff login successful');
+        break;
+
+      case 'Grantee':
+        await staffLoginPage.doStaffLogin(
+          process.env.Grantee_USERNAME!,
+          process.env.Grantee_PASSWORD!,
+          'Grantee Portal'
+        );
         break;
 
       case 'Organization':
         const organizationLoginPage = new OrganizationLoginPage(page);
 
-        await portalSelectionPage.clickOnOrganizationPortalLoginLink();
         await organizationLoginPage.organizationLogin(
           process.env.ORG_USERNAME!,
           process.env.ORG_PASSWORD!,
@@ -53,8 +60,7 @@ export async function loginAs(page: Page, role: UserRole): Promise<void> {
 
       case 'individual':
         const individualLoginPage = new IndividualLoginPage(page);
-        
-        await portalSelectionPage.clickOnIndividualPortalLoginLink();
+
         await individualLoginPage.individualLogin(
           process.env.IND_USERNAME!,
           process.env.IND_PASSWORD!
