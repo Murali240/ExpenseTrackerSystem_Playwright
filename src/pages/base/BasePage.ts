@@ -7,7 +7,7 @@ import { Assertions } from "@utils/assertions";
  * Contains common methods and utilities for all page objects
  */
 export class BasePage {
-  constructor(protected page: Page) {}
+  constructor(public page: Page) {}
 
   /** Delegates to {@link Assertions} so page objects can use `this.verify…` helpers. */
   protected async verifyElementVisible(
@@ -26,7 +26,7 @@ export class BasePage {
     return Assertions.verifyElementText(locator, expectedText, elementName);
   }
 
-  protected async isElementVisible(locator: Locator, timeout: number = 5000): Promise<boolean> {
+  public async isElementVisible(locator: Locator, timeout: number = 5000): Promise<boolean> {
     return Assertions.isElementVisible(locator, timeout);
   }
 

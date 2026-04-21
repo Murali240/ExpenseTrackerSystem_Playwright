@@ -6,7 +6,6 @@ import { Logger } from '@utils/logger';
 
 // Page Objects
 import { PublicPage } from '@pages/public/PublicPage';
-import { PortalSelectionPage } from '@pages/public/PortalSelectionPage';
 import { ProgramsPage } from '@pages/programs/ProgramsPage';
 import { AddProgramPage } from '@pages/programs/AddProgramPage';
 import { EditProgramPage } from '@pages/programs/EditProgramPage';
