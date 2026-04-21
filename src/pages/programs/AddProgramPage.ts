@@ -97,7 +97,7 @@ export class AddProgramPage extends SharedComponents {
 
   get programCodeInput(): Locator {
     return this.page
-      .locator('input[name="program_code"], input[id*="program_code"], input[id*="id_program_code"]')
+      .locator('[name="programcode"]')
       .first();
   }
 
@@ -107,7 +107,7 @@ export class AddProgramPage extends SharedComponents {
 
   get programNameInput(): Locator {
     return this.page
-      .locator('input[name="program_name"], input[id*="program_name"], input[id*="id_program_name"]')
+      .locator('[name="title"]')
       .first();
   }
 
@@ -166,11 +166,11 @@ export class AddProgramPage extends SharedComponents {
    * ═══════════════════════════════════════════════════════════ */
 
   get submitButton(): Locator {
-    return this.page.locator('button:has-text("Submit")').first();
+    return this.page.locator('#submit').first();
   }
 
   get cancelButton(): Locator {
-    return this.page.locator('button:has-text("Cancel")').first();
+    return this.page.locator('a:has-text("Cancel")').first();
   }
 
   /* ═══════════════════════════════════════════════════════════
@@ -333,11 +333,11 @@ export class AddProgramPage extends SharedComponents {
     createDepartment?: string; // create via modal then select
     department?: string;       // select existing from dropdown
     division?: string;
-    fiscalYear?: string;
+    fiscalYear: string;
     programCode: string;
     programName: string;
     programManager?: string;
-    programBudget?: string;
+    programBudget: string;
     programStartDate?: string;
     programEndDate?: string;
     description?: string;

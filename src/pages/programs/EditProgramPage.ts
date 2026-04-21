@@ -1,17 +1,100 @@
 import { Page, Locator } from '@playwright/test';
-import { BasePage } from '../base/BasePage';
+import { SharedComponents } from '../base/SharedComponents';
 import { Logger } from '../../utils/logger';
 
 /**
- * Edit Program Page Object
- * Handles all interactions on the Edit Program page
+ * EditProgramPage
+ * URL pattern: /programs/edit_program/<encoded-id>/
+ *
+ * Layout (from screenshots):
+ *
+ *  Left sidebar (7 tabs)
+ *  ┌────────────────────────────┐
+ *  │ ● Program Information      │  ← active tab (dark background)
+ *  │   Details                  │
+ *  │   Contact Information      │
+ *  │   Documents                │
+ *  │   Sub Programs             │
+ *  │   Grants                   │
+ *  │   Program Funding          │
+ *  │   Application Questions    │
+ *  └────────────────────────────┘
+ *
+ *  Right panel – "Program Information Details" (dark-navy header)
+ *  ┌──────────────────────────────────────────────────────────────┐
+ *  │  [+] Program Basic Information          ← collapsible        │
+ *  │  [+] Required Tabs To Show in Application                    │
+ *  │  [+] Supporting Documents                                    │
+ *  │  [+] Award Amount Allocation                                 │
+ *  │                                                              │
+ *  │          [Submit]  [Cancel]  [Next]                          │
+ *  └──────────────────────────────────────────────────────────────┘
+ *
+ *  Contact Information tab:
+ *  ┌──────────────────────────────────────────────────────────────┐
+ *  │  "Add New Contact Information" link (top-right)              │
+ *  │  Table: Actions | Full Name | Mobile Number | Email          │
+ *  │  [Back]  [Next]  [Exit]                                      │
+ *  └──────────────────────────────────────────────────────────────┘
+ *
+ *  Add Contact Information modal:
+ *  ┌──────────────────────────────┐
+ *  │  *Name: [--Select--] ▼       │   Mobile Number: [          ] │
+ *  │   Email: [          ]        │
+ *  │          [Submit]  [Cancel]  │
+ *  └──────────────────────────────┘
+ *
+ *  Documents tab:
+ *  ┌──────────────────────────────────────────────────────────────┐
+ *  │  "Add New Document" link (top-right)                         │
+ *  │  Table: Actions | Uploaded Date                              │
+ *  └──────────────────────────────────────────────────────────────┘
+ *
+ *  Add Document modal:
+ *  ┌──────────────────────────────────────────────────────────────┐
+ *  │  *Document Type: [--Select--]  *Upload Document: [Choose]   │
+ *  │  *Document Name: [          ]                                │
+ *  │  *Is it Confidential: ○ Yes  ○ No                           │
+ *  │   Description: [textarea]                                   │
+ *  │          [Submit]  [Cancel]                                 │
+ *  └──────────────────────────────────────────────────────────────┘
+ *
+ *  Sub Programs tab:
+ *  ┌──────────────────────────────────────────────────────────────┐
+ *  │  "Add New Sub Program" link (top-right)                      │
+ *  │  Table: Actions | Status                                     │
+ *  └──────────────────────────────────────────────────────────────┘
+ *
+ *  Add Sub Program modal:
+ *  ┌──────────────────────────────────────────────────────────────┐
+ *  │  *Program: [FY-26-27-Test Program] ▼   *Sub Program Code: [ ]│
+ *  │  *Sub Program Name: [              ]                         │
+ *  │   Primary Contact: [--Select--]   Secondary Contact: [     ] │
+ *  │   Description: [textarea]                                    │
+ *  │          [Submit]  [Cancel]                                  │
+ *  └──────────────────────────────────────────────────────────────┘
+ *
+ * Fixtures wiring (AuthFixtures.ts):
+ *   editProgramPage: async ({ grantorPage }, use) => {
+ *     await use(new EditProgramPage(grantorPage));
+ *   }
  */
-export class EditProgramPage extends BasePage {
-  // Page header
-  readonly pageHeader: Locator;
-  readonly noteMessage: Locator;
+export class EditProgramPage extends SharedComponents {
 
-  // Left sidebar tabs
+  /* ═══════════════════════════════════════════════════════════
+   * PAGE HEADER
+   * ═══════════════════════════════════════════════════════════ */
+
+  /** "Edit Program for <ProgramName>" banner at the top */
+  readonly pageHeader: Locator;
+
+  /** "Note:Please Add At Least One Contact" helper text (top-right) */
+  readonly contactNoteMessage: Locator;
+
+  /* ═══════════════════════════════════════════════════════════
+   * LEFT SIDEBAR TABS
+   * ═══════════════════════════════════════════════════════════ */
+
   readonly programInformationDetailsTab: Locator;
   readonly contactInformationTab: Locator;
   readonly documentsTab: Locator;
@@ -20,280 +103,1053 @@ export class EditProgramPage extends BasePage {
   readonly programFundingTab: Locator;
   readonly applicationQuestionsTab: Locator;
 
-  // Collapsible sections
-  readonly programBasicInformationSection: Locator;
-  readonly requiredTabsSection: Locator;
-  readonly supportingDocumentsSection: Locator;
-  readonly awardAmountAllocationSection: Locator;
+  /* ═══════════════════════════════════════════════════════════
+   * PROGRAM INFORMATION DETAILS TAB
+   * Accordion / collapsible sections (toggled with + / - icon)
+   * ═══════════════════════════════════════════════════════════ */
 
-  // Action buttons
+  /** Collapsible header rows – click to expand/collapse */
+  readonly programBasicInfoAccordion: Locator;
+  readonly requiredTabsAccordion: Locator;
+  readonly supportingDocsAccordion: Locator;
+  readonly awardAmountAllocationAccordion: Locator;
+
+  /* ── Required Tabs To Show in Application ─────────────────── */
+
+  /**
+   * Multi-select dropdown showing "18 selected" (or N selected).
+   * Opens a searchable checkbox list with tab names.
+   */
+  readonly requiredTabsDropdown: Locator;
+
+  /** Search box inside the Required Tabs dropdown */
+  readonly requiredTabsSearchInput: Locator;
+
+  /** "unselect all" link inside the Required Tabs dropdown */
+  readonly requiredTabsUnselectAll: Locator;
+
+  /* ── Award Amount Allocation ──────────────────────────────── */
+
+  /** "Yes" radio – allow modify 'Amount Allocation' field */
+  readonly awardAmountAllocationYes: Locator;
+  /** "No" radio – do NOT allow modify */
+  readonly awardAmountAllocationNo: Locator;
+
+  /**
+   * Roles multi-select dropdown (shown when 'Yes' is selected).
+   * Screenshot shows "1 selected" with "Grant Coordinator" checked.
+   */
+  readonly awardAmountRolesDropdown: Locator;
+
+  /* ── Program Information Details – action buttons ─────────── */
+
   readonly submitButton: Locator;
   readonly cancelButton: Locator;
   readonly nextButton: Locator;
 
+  /* ═══════════════════════════════════════════════════════════
+   * CONTACT INFORMATION TAB
+   * ═══════════════════════════════════════════════════════════ */
+
+  /** Section header inside the right panel */
+  readonly contactInformationPanelHeader: Locator;
+
+  /** "Add New Contact Information" link (top-right of contacts panel) */
+  readonly addNewContactLink: Locator;
+
+  /** Contacts DataTable */
+  readonly contactsTable: Locator;
+
+  /** Column headers */
+  readonly contactActionsColumnHeader: Locator;
+  readonly contactFullNameColumnHeader: Locator;
+  readonly contactMobileNumberColumnHeader: Locator;
+  readonly contactEmailColumnHeader: Locator;
+
+  /** Inline filter rows (below column headers) */
+  readonly contactFullNameFilterInput: Locator;
+  readonly contactMobileFilterInput: Locator;
+  readonly contactEmailFilterInput: Locator;
+
+  /** Pagination on contacts table */
+  readonly contactPaginationInfo: Locator;
+
+  /** Contact tab navigation buttons */
+  readonly contactBackButton: Locator;
+  readonly contactNextButton: Locator;
+  readonly contactExitButton: Locator;
+
+  /* ── Add Contact Information Modal ───────────────────────── */
+
+  readonly addContactModal: Locator;
+  readonly addContactModalTitle: Locator;
+
+  /**
+   * *Name: dropdown (required) – lists existing staff/users
+   * Screenshot shows "---Select---" placeholder
+   */
+  readonly contactNameDropdown: Locator;
+
+  /** Mobile Number: text input (optional) */
+  readonly contactMobileNumberInput: Locator;
+
+  /** Email: text input (optional, auto-fills when name is selected) */
+  readonly contactEmailInput: Locator;
+
+  /** Modal submit & cancel */
+  readonly addContactSubmitButton: Locator;
+  readonly addContactCancelButton: Locator;
+  readonly addContactCloseIcon: Locator;
+
+  /* ═══════════════════════════════════════════════════════════
+   * DOCUMENTS TAB
+   * ═══════════════════════════════════════════════════════════ */
+
+  /** Section header inside the right panel */
+  readonly documentsPanelHeader: Locator;
+
+  /** "Add New Document" link (top-right of documents panel) */
+  readonly addNewDocumentLink: Locator;
+
+  /** Documents DataTable */
+  readonly documentsTable: Locator;
+
+  /** Document table column headers */
+  readonly documentActionsColumnHeader: Locator;
+  readonly documentUploadedDateColumnHeader: Locator;
+
+  /** Pagination info on documents table */
+  readonly documentPaginationInfo: Locator;
+
+  /* ── Add Document Modal ───────────────────────────────────── */
+
+  readonly addDocumentModal: Locator;
+  readonly addDocumentModalTitle: Locator;
+
+  /**
+   * *Document Type: dropdown (required)
+   * Screenshot: "--Select--" placeholder
+   */
+  readonly documentTypeDropdown: Locator;
+
+  /**
+   * *Upload Document: file input (required)
+   * Screenshot: "Choose file  No file chosen"
+   */
+  readonly uploadDocumentInput: Locator;
+
+  /**
+   * *Document Name: text input (required)
+   */
+  readonly documentNameInput: Locator;
+
+  /**
+   * *Is it Confidential: radio buttons (required)
+   * Screenshot: ○ Yes  ○ No
+   */
+  readonly documentConfidentialYes: Locator;
+  readonly documentConfidentialNo: Locator;
+
+  /** Description: textarea (optional) */
+  readonly documentDescriptionTextarea: Locator;
+
+  /** Modal submit & cancel */
+  readonly addDocumentSubmitButton: Locator;
+  readonly addDocumentCancelButton: Locator;
+  readonly addDocumentCloseIcon: Locator;
+
+  /* ═══════════════════════════════════════════════════════════
+   * SUB PROGRAMS TAB
+   * ═══════════════════════════════════════════════════════════ */
+
+  /** Section header inside the right panel */
+  readonly subProgramsPanelHeader: Locator;
+
+  /** "Add New Sub Program" link (top-right of sub programs panel) */
+  readonly addNewSubProgramLink: Locator;
+
+  /** Sub Programs DataTable */
+  readonly subProgramsTable: Locator;
+
+  /** Sub Programs column headers */
+  readonly subProgramActionsColumnHeader: Locator;
+  readonly subProgramStatusColumnHeader: Locator;
+
+  /** Pagination info on sub programs table */
+  readonly subProgramPaginationInfo: Locator;
+
+  /* ── Add Sub Program Modal ────────────────────────────────── */
+
+  readonly addSubProgramModal: Locator;
+  readonly addSubProgramModalTitle: Locator;
+
+  /**
+   * *Program: dropdown (pre-filled with current program, e.g. "FY-26-27 - Test Program")
+   */
+  readonly subProgramProgramDropdown: Locator;
+
+  /**
+   * *Sub Program Code: text input (required)
+   */
+  readonly subProgramCodeInput: Locator;
+
+  /**
+   * *Sub Program Name: text input (required)
+   */
+  readonly subProgramNameInput: Locator;
+
+  /**
+   * Primary Contact: dropdown (optional) – "---Select---"
+   */
+  readonly subProgramPrimaryContactDropdown: Locator;
+
+  /**
+   * Secondary Contact: dropdown (optional) – "---Select---"
+   */
+  readonly subProgramSecondaryContactDropdown: Locator;
+
+  /** Description: textarea (optional) */
+  readonly subProgramDescriptionTextarea: Locator;
+
+  /** Modal submit & cancel */
+  readonly addSubProgramSubmitButton: Locator;
+  readonly addSubProgramCancelButton: Locator;
+  readonly addSubProgramCloseIcon: Locator;
+
+  /* ═══════════════════════════════════════════════════════════
+   * CONSTRUCTOR
+   * ═══════════════════════════════════════════════════════════ */
+
   constructor(page: Page) {
     super(page);
 
-    // Initialize locators
-    this.pageHeader = page.locator('h1:has-text("Edit Program"), h2:has-text("Edit Program")');
-    this.noteMessage = page.locator('text=/Note:Please Add At Least One Contact/i');
+    /* ── Page header ── */
+    this.pageHeader = page.locator(
+      '.breadcrumb-item.active, h2:has-text("Edit Program"), div.page-header:has-text("Edit Program")'
+    ).first();
+    this.contactNoteMessage = page.locator('text=/Note.*Please Add At Least One Contact/i').first();
 
-    // Sidebar tabs
-    this.programInformationDetailsTab = page.locator('text=Program Information Details');
-    this.contactInformationTab = page.locator('text=Contact Information');
-    this.documentsTab = page.locator('text=Documents');
-    this.subProgramsTab = page.locator('text=Sub Programs');
-    this.grantsTab = page.locator('text=Grants');
-    this.programFundingTab = page.locator('text=Program Funding');
-    this.applicationQuestionsTab = page.locator('text=Application Questions');
+    /* ── Sidebar tabs ──
+     * The sidebar uses a list-based nav. Text matching is the safest
+     * selector because the app doesn't expose data-* attributes. */
+    this.programInformationDetailsTab = page
+      .locator('ul.nav-pills li a, ul.nav li a, aside li a, .left-nav li a')
+      .filter({ hasText: 'Program Information Details' })
+      .first();
 
-    // Collapsible sections (with + icon)
-    this.programBasicInformationSection = page.locator('text=Program Basic Information');
-    this.requiredTabsSection = page.locator('text=Required Tabs To Show in Application');
-    this.supportingDocumentsSection = page.locator('text=Supporting Documents');
-    this.awardAmountAllocationSection = page.locator('text=Award Amount Allocation');
+    this.contactInformationTab = page
+      .locator('ul.nav-pills li a, ul.nav li a, aside li a, .left-nav li a')
+      .filter({ hasText: 'Contact Information' })
+      .first();
 
-    // Action buttons
-    this.submitButton = page.locator('button:has-text("Submit")');
-    this.cancelButton = page.locator('button:has-text("Cancel")');
-    this.nextButton = page.locator('button:has-text("Next")');
+    this.documentsTab = page
+      .locator('ul.nav-pills li a, ul.nav li a, aside li a, .left-nav li a')
+      .filter({ hasText: 'Documents' })
+      .first();
+
+    this.subProgramsTab = page
+      .locator('ul.nav-pills li a, ul.nav li a, aside li a, .left-nav li a')
+      .filter({ hasText: 'Sub Programs' })
+      .first();
+
+    this.grantsTab = page
+      .locator('ul.nav-pills li a, ul.nav li a, aside li a, .left-nav li a')
+      .filter({ hasText: 'Grants' })
+      .first();
+
+    this.programFundingTab = page
+      .locator('ul.nav-pills li a, ul.nav li a, aside li a, .left-nav li a')
+      .filter({ hasText: 'Program Funding' })
+      .first();
+
+    this.applicationQuestionsTab = page
+      .locator('ul.nav-pills li a, ul.nav li a, aside li a, .left-nav li a')
+      .filter({ hasText: 'Application Questions' })
+      .first();
+
+    /* ── Program Information Details accordions ── */
+    this.programBasicInfoAccordion = page
+      .locator('div.card-header, .accordion-header, [data-toggle="collapse"]')
+      .filter({ hasText: 'Program Basic Information' })
+      .first();
+
+    this.requiredTabsAccordion = page
+      .locator('div.card-header, .accordion-header, [data-toggle="collapse"]')
+      .filter({ hasText: 'Required Tabs To Show in Application' })
+      .first();
+
+    this.supportingDocsAccordion = page
+      .locator('div.card-header, .accordion-header, [data-toggle="collapse"]')
+      .filter({ hasText: 'Supporting Documents' })
+      .first();
+
+    this.awardAmountAllocationAccordion = page
+      .locator('div.card-header, .accordion-header, [data-toggle="collapse"]')
+      .filter({ hasText: 'Award Amount Allocation' })
+      .first();
+
+    /* ── Required Tabs multi-select ── */
+    this.requiredTabsDropdown = page
+      .locator('.multiselect-container, div.multiselect, [class*="multiselect"]')
+      .first();
+    this.requiredTabsSearchInput = page
+      .locator('input[placeholder="Search Required Tabs"], .multiselect__input')
+      .first();
+    this.requiredTabsUnselectAll = page.locator('a:has-text("unselect all")').first();
+
+    /* ── Award Amount Allocation radios ── */
+    this.awardAmountAllocationYes = page
+      .locator('input[type="radio"][value="Yes"], input[type="radio"]')
+      .filter({ hasText: '' })
+      .nth(0);
+    // Use a more robust selector based on context
+    this.awardAmountAllocationYes = page.locator(
+      'label:has-text("Yes") input[type="radio"], input[type="radio"] + label:has-text("Yes")'
+    ).first();
+    this.awardAmountAllocationNo = page.locator(
+      'label:has-text("No") input[type="radio"], input[type="radio"] + label:has-text("No")'
+    ).first();
+    this.awardAmountRolesDropdown = page.locator(
+      'select[name*="role"], select[name*="Role"], .multiselect[id*="role"]'
+    ).first();
+
+    /* ── Program Information Details buttons ── */
+    this.submitButton = page.locator('button:has-text("Submit")').first();
+    this.cancelButton = page.locator('button:has-text("Cancel")').first();
+    this.nextButton   = page.locator('button:has-text("Next")').first();
+
+    /* ═══ CONTACT INFORMATION TAB ═══ */
+    this.contactInformationPanelHeader = page
+      .locator('.card-header, .panel-heading, h4, h5')
+      .filter({ hasText: 'Contact Information' })
+      .first();
+
+    this.addNewContactLink = page
+      .locator('a.link-btn, a[class*="link"]')
+      .filter({ hasText: 'Add New Contact Information' })
+      .first();
+
+    this.contactsTable = page.locator('table').filter({
+      has: page.locator('th:has-text("Full Name")')
+    }).first();
+
+    this.contactActionsColumnHeader     = page.locator('th:has-text("Actions")').first();
+    this.contactFullNameColumnHeader    = page.locator('th:has-text("Full Name")').first();
+    this.contactMobileNumberColumnHeader = page.locator('th:has-text("Mobile Number")').first();
+    this.contactEmailColumnHeader       = page.locator('th:has-text("Email")').first();
+
+    this.contactFullNameFilterInput  = page.locator('th:has-text("Full Name") ~ th input, input[placeholder="Full Name"]').first();
+    this.contactMobileFilterInput    = page.locator('input[placeholder="Mobile Number"]').first();
+    this.contactEmailFilterInput     = page.locator('input[placeholder="Email"]').first();
+
+    this.contactPaginationInfo = page.locator('text=/Showing \\d+ To \\d+ Of \\d+ Entries/i').first();
+
+    this.contactBackButton = page.locator('a:has-text("Back"), button:has-text("Back")').first();
+    this.contactNextButton = page.locator('a:has-text("Next"), button:has-text("Next")').nth(1);
+    this.contactExitButton = page.locator('a:has-text("Exit"), button:has-text("Exit")').first();
+
+    /* ── Add Contact Modal ── */
+    this.addContactModal      = page.locator('.modal:visible, #contactModal, [id*="contact"][class*="modal"]').first();
+    this.addContactModalTitle = page.locator('.modal-title:has-text("Add Contact Information"), .modal-header h5').first();
+
+    this.contactNameDropdown = page.locator(
+      '.modal select[name="name"], .modal select[id*="name"], .modal select'
+    ).first();
+    this.contactMobileNumberInput = page.locator(
+      '.modal input[name*="mobile"], .modal input[placeholder*="Mobile"], .modal input[type="text"]'
+    ).nth(0);
+    this.contactEmailInput = page.locator(
+      '.modal input[name*="email"], .modal input[placeholder*="Email"], .modal input[type="email"]'
+    ).first();
+
+    this.addContactSubmitButton = page.locator(
+      '.modal button:has-text("Submit"), .modal input[type="submit"]'
+    ).first();
+    this.addContactCancelButton = page.locator(
+      '.modal button:has-text("Cancel")'
+    ).first();
+    this.addContactCloseIcon = page.locator(
+      '.modal .close, .modal button[aria-label="Close"], .modal .btn-close'
+    ).first();
+
+    /* ═══ DOCUMENTS TAB ═══ */
+    this.documentsPanelHeader = page
+      .locator('.card-header, .panel-heading, h4, h5')
+      .filter({ hasText: 'Documents' })
+      .first();
+
+    this.addNewDocumentLink = page
+      .locator('a.link-btn, a[class*="link"]')
+      .filter({ hasText: 'Add New Document' })
+      .first();
+
+    this.documentsTable = page.locator('table').filter({
+      has: page.locator('th:has-text("Uploaded Date")')
+    }).first();
+
+    this.documentActionsColumnHeader      = page.locator('th:has-text("Actions")').nth(1);
+    this.documentUploadedDateColumnHeader = page.locator('th:has-text("Uploaded Date")').first();
+
+    this.documentPaginationInfo = page.locator('text=/Showing \\d+ To \\d+ Of \\d+ Entries/i').nth(1);
+
+    /* ── Add Document Modal ── */
+    this.addDocumentModal      = page.locator('.modal:visible').first();
+    this.addDocumentModalTitle = page.locator('.modal-title:has-text("Add Document")').first();
+
+    this.documentTypeDropdown = page.locator(
+      '.modal select[name*="doc_type"], .modal select[name*="document_type"], .modal select'
+    ).first();
+    this.uploadDocumentInput = page.locator(
+      '.modal input[type="file"]'
+    ).first();
+    this.documentNameInput = page.locator(
+      '.modal input[name*="doc_name"], .modal input[name*="document_name"], .modal input[type="text"]'
+    ).first();
+    this.documentConfidentialYes = page.locator(
+      '.modal input[type="radio"][value="Yes"], .modal label:has-text("Yes") input'
+    ).first();
+    this.documentConfidentialNo = page.locator(
+      '.modal input[type="radio"][value="No"], .modal label:has-text("No") input'
+    ).first();
+    this.documentDescriptionTextarea = page.locator(
+      '.modal textarea[name*="description"], .modal textarea'
+    ).first();
+
+    this.addDocumentSubmitButton = page.locator(
+      '.modal button:has-text("Submit"), .modal input[type="submit"]'
+    ).first();
+    this.addDocumentCancelButton = page.locator(
+      '.modal button:has-text("Cancel")'
+    ).first();
+    this.addDocumentCloseIcon = page.locator(
+      '.modal .close, .modal button[aria-label="Close"], .modal .btn-close'
+    ).first();
+
+    /* ═══ SUB PROGRAMS TAB ═══ */
+    this.subProgramsPanelHeader = page
+      .locator('.card-header, .panel-heading, h4, h5')
+      .filter({ hasText: 'Sub Programs' })
+      .first();
+
+    this.addNewSubProgramLink = page
+      .locator('a.link-btn, a[class*="link"]')
+      .filter({ hasText: 'Add New Sub Program' })
+      .first();
+
+    this.subProgramsTable = page.locator('table').filter({
+      has: page.locator('th:has-text("Status")')
+    }).first();
+
+    this.subProgramActionsColumnHeader = page.locator('th:has-text("Actions")').first();
+    this.subProgramStatusColumnHeader  = page.locator('th:has-text("Status")').first();
+
+    this.subProgramPaginationInfo = page.locator('text=/Showing \\d+ To \\d+ Of \\d+ Entries/i').first();
+
+    /* ── Add Sub Program Modal ── */
+    this.addSubProgramModal      = page.locator('.modal:visible').first();
+    this.addSubProgramModalTitle = page.locator('.modal-title:has-text("Add Sub Program")').first();
+
+    this.subProgramProgramDropdown = page.locator(
+      '.modal select[name="program"], .modal select[name*="program"]'
+    ).first();
+    this.subProgramCodeInput = page.locator(
+      '.modal input[name*="sub_program_code"], .modal input[name*="code"]'
+    ).first();
+    this.subProgramNameInput = page.locator(
+      '.modal input[name*="sub_program_name"], .modal input[name*="name"]'
+    ).first();
+    this.subProgramPrimaryContactDropdown = page.locator(
+      '.modal select[name*="primary"], .modal select'
+    ).nth(1);
+    this.subProgramSecondaryContactDropdown = page.locator(
+      '.modal select[name*="secondary"], .modal select'
+    ).nth(2);
+    this.subProgramDescriptionTextarea = page.locator(
+      '.modal textarea'
+    ).first();
+
+    this.addSubProgramSubmitButton = page.locator(
+      '.modal button:has-text("Submit"), .modal input[type="submit"]'
+    ).first();
+    this.addSubProgramCancelButton = page.locator(
+      '.modal button:has-text("Cancel")'
+    ).first();
+    this.addSubProgramCloseIcon = page.locator(
+      '.modal .close, .modal button[aria-label="Close"], .modal .btn-close'
+    ).first();
   }
 
-  /* ==================== Navigation Methods ==================== */
+  /* ═══════════════════════════════════════════════════════════
+   * NAVIGATION HELPERS
+   * ═══════════════════════════════════════════════════════════ */
 
   /**
-   * Click on a specific tab
-   */
-  async clickTab(tabName: string): Promise<void> {
-    Logger.step(`Clicking on ${tabName} tab`);
-    const tab = this.page.locator(`text=${tabName}`);
-    await this.clickElement(tab, `${tabName} tab`);
-  }
-
-  /**
-   * Navigate to Program Information Details tab
+   * Click the "Program Information Details" sidebar tab.
+   * This is the default active tab when the Edit Program page opens.
    */
   async goToProgramInformationDetails(): Promise<void> {
+    Logger.step('Navigating to Program Information Details tab');
     await this.clickElement(this.programInformationDetailsTab, 'Program Information Details tab');
+    await this.waitForPageLoad();
+    Logger.success('On Program Information Details tab');
   }
 
-  /**
-   * Navigate to Contact Information tab
-   */
   async goToContactInformation(): Promise<void> {
+    Logger.step('Navigating to Contact Information tab');
     await this.clickElement(this.contactInformationTab, 'Contact Information tab');
+    await this.waitForPageLoad();
+    Logger.success('On Contact Information tab');
   }
 
-  /**
-   * Navigate to Documents tab
-   */
   async goToDocuments(): Promise<void> {
+    Logger.step('Navigating to Documents tab');
     await this.clickElement(this.documentsTab, 'Documents tab');
+    await this.waitForPageLoad();
+    Logger.success('On Documents tab');
   }
 
-  /**
-   * Navigate to Sub Programs tab
-   */
   async goToSubPrograms(): Promise<void> {
+    Logger.step('Navigating to Sub Programs tab');
     await this.clickElement(this.subProgramsTab, 'Sub Programs tab');
+    await this.waitForPageLoad();
+    Logger.success('On Sub Programs tab');
   }
 
-  /**
-   * Navigate to Grants tab
-   */
   async goToGrants(): Promise<void> {
+    Logger.step('Navigating to Grants tab');
     await this.clickElement(this.grantsTab, 'Grants tab');
+    await this.waitForPageLoad();
+    Logger.success('On Grants tab');
   }
 
-  /**
-   * Navigate to Program Funding tab
-   */
   async goToProgramFunding(): Promise<void> {
+    Logger.step('Navigating to Program Funding tab');
     await this.clickElement(this.programFundingTab, 'Program Funding tab');
+    await this.waitForPageLoad();
+    Logger.success('On Program Funding tab');
   }
 
-  /**
-   * Navigate to Application Questions tab
-   */
   async goToApplicationQuestions(): Promise<void> {
+    Logger.step('Navigating to Application Questions tab');
     await this.clickElement(this.applicationQuestionsTab, 'Application Questions tab');
+    await this.waitForPageLoad();
+    Logger.success('On Application Questions tab');
   }
 
-  /* ==================== Section Expansion Methods ==================== */
+  /* ═══════════════════════════════════════════════════════════
+   * ACCORDION HELPERS – Program Information Details tab
+   * ═══════════════════════════════════════════════════════════ */
 
   /**
-   * Get expand/collapse icon for a section
+   * Expand an accordion section by clicking its header row.
+   * Uses the minus icon presence to decide if already expanded.
    */
-  getSectionToggleIcon(sectionName: string): Locator {
-    return this.page.locator(`text=${sectionName}`).locator('..').locator('[class*="plus"], [class*="expand"]');
-  }
-
-  /**
-   * Expand a collapsible section
-   */
-  async expandSection(sectionName: string): Promise<void> {
-    Logger.step(`Expanding ${sectionName} section`);
-    const section = this.page.locator(`text=${sectionName}`);
-    const isExpanded = await section.locator('..').locator('[class*="minus"], [class*="collapse"]').isVisible().catch(() => false);
-    
+  private async expandAccordion(header: Locator, sectionName: string): Promise<void> {
+    Logger.step(`Expanding accordion: "${sectionName}"`);
+    const minusIcon = header.locator('.fa-minus, [class*="minus"]');
+    const isExpanded = await minusIcon.isVisible({ timeout: 1500 }).catch(() => false);
     if (!isExpanded) {
-      await section.click();
-      await this.wait(500);
-      Logger.success(`${sectionName} section expanded`);
+      await header.click();
+      await this.wait(400);
+      Logger.success(`"${sectionName}" accordion expanded`);
     } else {
-      Logger.info(`${sectionName} section already expanded`);
+      Logger.info(`"${sectionName}" accordion already expanded`);
     }
   }
 
-  /**
-   * Collapse a section
-   */
-  async collapseSection(sectionName: string): Promise<void> {
-    Logger.step(`Collapsing ${sectionName} section`);
-    const section = this.page.locator(`text=${sectionName}`);
-    const isExpanded = await section.locator('..').locator('[class*="minus"], [class*="collapse"]').isVisible().catch(() => false);
-    
+  private async collapseAccordion(header: Locator, sectionName: string): Promise<void> {
+    Logger.step(`Collapsing accordion: "${sectionName}"`);
+    const minusIcon = header.locator('.fa-minus, [class*="minus"]');
+    const isExpanded = await minusIcon.isVisible({ timeout: 1500 }).catch(() => false);
     if (isExpanded) {
-      await section.click();
-      await this.wait(500);
-      Logger.success(`${sectionName} section collapsed`);
+      await header.click();
+      await this.wait(400);
+      Logger.success(`"${sectionName}" accordion collapsed`);
     } else {
-      Logger.info(`${sectionName} section already collapsed`);
+      Logger.info(`"${sectionName}" accordion already collapsed`);
     }
   }
 
-  /**
-   * Expand Program Basic Information
-   */
-  async expandProgramBasicInformation(): Promise<void> {
-    await this.expandSection('Program Basic Information');
+  async expandProgramBasicInfo(): Promise<void> {
+    await this.expandAccordion(this.programBasicInfoAccordion, 'Program Basic Information');
   }
 
-  /**
-   * Expand Required Tabs To Show in Application
-   */
+  async collapseProgramBasicInfo(): Promise<void> {
+    await this.collapseAccordion(this.programBasicInfoAccordion, 'Program Basic Information');
+  }
+
   async expandRequiredTabs(): Promise<void> {
-    await this.expandSection('Required Tabs To Show in Application');
+    await this.expandAccordion(this.requiredTabsAccordion, 'Required Tabs To Show in Application');
   }
 
-  /**
-   * Expand Supporting Documents
-   */
+  async collapseRequiredTabs(): Promise<void> {
+    await this.collapseAccordion(this.requiredTabsAccordion, 'Required Tabs To Show in Application');
+  }
+
   async expandSupportingDocuments(): Promise<void> {
-    await this.expandSection('Supporting Documents');
+    await this.expandAccordion(this.supportingDocsAccordion, 'Supporting Documents');
   }
 
-  /**
-   * Expand Award Amount Allocation
-   */
+  async collapseSupportingDocuments(): Promise<void> {
+    await this.collapseAccordion(this.supportingDocsAccordion, 'Supporting Documents');
+  }
+
   async expandAwardAmountAllocation(): Promise<void> {
-    await this.expandSection('Award Amount Allocation');
+    await this.expandAccordion(this.awardAmountAllocationAccordion, 'Award Amount Allocation');
   }
 
-  /* ==================== Action Methods ==================== */
+  async collapseAwardAmountAllocation(): Promise<void> {
+    await this.collapseAccordion(this.awardAmountAllocationAccordion, 'Award Amount Allocation');
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+   * REQUIRED TABS MULTI-SELECT HELPERS
+   * ═══════════════════════════════════════════════════════════ */
 
   /**
-   * Click Submit button
+   * Open the Required Tabs dropdown if it is not already open.
    */
+  async openRequiredTabsDropdown(): Promise<void> {
+    Logger.step('Opening Required Tabs dropdown');
+    await this.requiredTabsDropdown.click();
+    await this.wait(300);
+    Logger.success('Required Tabs dropdown opened');
+  }
+
+  /**
+   * Get the text shown in the Required Tabs button (e.g. "18 selected").
+   */
+  async getRequiredTabsSelectedCount(): Promise<string> {
+    const text = await this.requiredTabsDropdown.textContent();
+    Logger.info(`Required Tabs selection: ${text?.trim()}`);
+    return text?.trim() || '';
+  }
+
+  /**
+   * Search for a tab name inside the multi-select dropdown.
+   * Caller must first call openRequiredTabsDropdown().
+   */
+  async searchRequiredTab(tabName: string): Promise<void> {
+    Logger.step(`Searching for tab: "${tabName}"`);
+    await this.fillInput(this.requiredTabsSearchInput, tabName, 'Required Tabs search');
+  }
+
+  /**
+   * Check whether a specific tab checkbox is currently checked.
+   * Call openRequiredTabsDropdown() first.
+   */
+  async isRequiredTabChecked(tabName: string): Promise<boolean> {
+    const checkbox = this.page.locator(
+      `label:has-text("${tabName}") input[type="checkbox"], ` +
+      `li:has-text("${tabName}") input[type="checkbox"]`
+    ).first();
+    return checkbox.isChecked();
+  }
+
+  /**
+   * Toggle (check/uncheck) a specific tab in the multi-select dropdown.
+   */
+  async toggleRequiredTab(tabName: string): Promise<void> {
+    Logger.step(`Toggling required tab: "${tabName}"`);
+    const checkbox = this.page.locator(
+      `label:has-text("${tabName}") input[type="checkbox"], ` +
+      `li:has-text("${tabName}") input[type="checkbox"]`
+    ).first();
+    await checkbox.click();
+    Logger.success(`Tab "${tabName}" toggled`);
+  }
+
+  /**
+   * Click "unselect all" inside the Required Tabs dropdown.
+   */
+  async unselectAllRequiredTabs(): Promise<void> {
+    Logger.step('Clicking "unselect all" in Required Tabs dropdown');
+    await this.clickElement(this.requiredTabsUnselectAll, 'unselect all link');
+    Logger.success('All required tabs unselected');
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+   * AWARD AMOUNT ALLOCATION HELPERS
+   * ═══════════════════════════════════════════════════════════ */
+
+  /**
+   * Select "Yes" for the Award Amount Allocation option.
+   * This reveals the Roles dropdown.
+   */
+  async selectAwardAmountAllocationYes(): Promise<void> {
+    Logger.step('Selecting Award Amount Allocation: Yes');
+    // Scope to the accordion content area to avoid modal radio conflicts
+    const yesRadio = this.page.locator(
+      'input[type="radio"][value="1"], label:has-text("Yes") input[type="radio"]'
+    ).first();
+    await yesRadio.check();
+    await this.wait(300);
+    Logger.success('Award Amount Allocation set to Yes');
+  }
+
+  async selectAwardAmountAllocationNo(): Promise<void> {
+    Logger.step('Selecting Award Amount Allocation: No');
+    const noRadio = this.page.locator(
+      'input[type="radio"][value="0"], label:has-text("No") input[type="radio"]'
+    ).first();
+    await noRadio.check();
+    await this.wait(300);
+    Logger.success('Award Amount Allocation set to No');
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+   * PROGRAM INFORMATION DETAILS – ACTION BUTTONS
+   * ═══════════════════════════════════════════════════════════ */
+
   async clickSubmit(): Promise<void> {
-    Logger.step('Clicking Submit button');
+    Logger.step('Clicking Submit on Program Information Details');
     await this.clickElement(this.submitButton, 'Submit button');
     await this.waitForPageLoad();
   }
 
-  /**
-   * Click Cancel button
-   */
   async clickCancel(): Promise<void> {
-    Logger.step('Clicking Cancel button');
+    Logger.step('Clicking Cancel on Program Information Details');
     await this.clickElement(this.cancelButton, 'Cancel button');
     await this.waitForPageLoad();
   }
 
-  /**
-   * Click Next button
-   */
   async clickNext(): Promise<void> {
-    Logger.step('Clicking Next button');
+    Logger.step('Clicking Next on Program Information Details');
     await this.clickElement(this.nextButton, 'Next button');
     await this.waitForPageLoad();
   }
 
-  /* ==================== Verification Methods ==================== */
+  /* ═══════════════════════════════════════════════════════════
+   * CONTACT INFORMATION – ACTION METHODS
+   * ═══════════════════════════════════════════════════════════ */
 
   /**
-   * Verify page is loaded
+   * Click "Add New Contact Information" to open the modal.
+   * Waits for the modal to appear before returning.
    */
-  async verifyPageLoaded(): Promise<void> {
-    await this.verifyElementVisible(this.pageHeader, 'Edit Program page header');
+  async clickAddNewContact(): Promise<void> {
+    Logger.step('Clicking "Add New Contact Information"');
+    await this.clickElement(this.addNewContactLink, 'Add New Contact Information link');
+    await this.page.waitForSelector('.modal:visible', { timeout: 10000 });
+    Logger.success('Add Contact Information modal opened');
   }
 
   /**
-   * Verify note message appears
+   * Fill and submit the Add Contact Information modal.
+   * @param nameValue – the value/label to select from the Name dropdown
+   * @param mobileNumber – optional mobile number
+   * @param email – optional email (may auto-fill when name is selected)
    */
-  async verifyNoteMessageAppears(): Promise<void> {
-    await this.verifyElementVisible(this.noteMessage, 'Note message');
-  }
+  async fillAndSubmitContactModal(data: {
+    nameValue: string;
+    mobileNumber?: string;
+    email?: string;
+  }): Promise<void> {
+    Logger.step(`Adding contact: "${data.nameValue}"`);
 
-  /**
-   * Verify all tabs are visible
-   */
-  async verifyAllTabsVisible(): Promise<void> {
-    Logger.step('Verifying all tabs are visible');
-    
-    await this.verifyElementVisible(this.programInformationDetailsTab, 'Program Information Details tab');
-    await this.verifyElementVisible(this.contactInformationTab, 'Contact Information tab');
-    await this.verifyElementVisible(this.documentsTab, 'Documents tab');
-    await this.verifyElementVisible(this.subProgramsTab, 'Sub Programs tab');
-    await this.verifyElementVisible(this.grantsTab, 'Grants tab');
-    await this.verifyElementVisible(this.programFundingTab, 'Program Funding tab');
-    await this.verifyElementVisible(this.applicationQuestionsTab, 'Application Questions tab');
-    
-    Logger.success('All tabs are visible');
-  }
+    await this.contactNameDropdown.waitFor({ state: 'visible', timeout: 8000 });
+    await this.contactNameDropdown.selectOption({ label: data.nameValue });
+    await this.wait(400); // allow auto-fill of email
 
-  /**
-   * Verify all sections are visible
-   */
-  async verifyAllSectionsVisible(): Promise<void> {
-    Logger.step('Verifying all sections are visible');
-    
-    await this.verifyElementVisible(this.programBasicInformationSection, 'Program Basic Information section');
-    await this.verifyElementVisible(this.requiredTabsSection, 'Required Tabs section');
-    await this.verifyElementVisible(this.supportingDocumentsSection, 'Supporting Documents section');
-    await this.verifyElementVisible(this.awardAmountAllocationSection, 'Award Amount Allocation section');
-    
-    Logger.success('All sections are visible');
-  }
-
-  /**
-   * Get active tab name
-   */
-  async getActiveTab(): Promise<string | null> {
-    const activeTab = this.page.locator('.active[role="tab"], .tab.active, .selected-tab').first();
-    if (await this.isElementVisible(activeTab, 2000)) {
-      return await activeTab.textContent();
+    if (data.mobileNumber) {
+      await this.fillInput(this.contactMobileNumberInput, data.mobileNumber, 'Mobile Number');
     }
-    return null;
+    if (data.email) {
+      await this.fillInput(this.contactEmailInput, data.email, 'Email');
+    }
+
+    await this.clickElement(this.addContactSubmitButton, 'Add Contact Submit');
+    await this.page.waitForSelector('.modal:visible', { state: 'hidden', timeout: 10000 });
+    await this.wait(600); // DataTable refresh
+    Logger.success(`Contact "${data.nameValue}" added`);
   }
 
   /**
-   * Verify specific tab is active
+   * Close the Add Contact modal by clicking Cancel.
    */
-  async verifyTabIsActive(tabName: string): Promise<void> {
-    const activeTab = await this.getActiveTab();
-    if (activeTab?.includes(tabName)) {
-      Logger.success(`${tabName} tab is active`);
+  async cancelAddContactModal(): Promise<void> {
+    Logger.step('Cancelling Add Contact modal');
+    await this.clickElement(this.addContactCancelButton, 'Add Contact Cancel button');
+    await this.wait(400);
+    Logger.success('Add Contact modal cancelled');
+  }
+
+  /**
+   * Returns the row locator for a contact by full name.
+   */
+  getContactRowByName(fullName: string): Locator {
+    return this.page.locator(`tr:has-text("${fullName}")`).first();
+  }
+
+  /**
+   * Returns true when a row with the given name is visible in the contacts table.
+   */
+  async isContactVisible(fullName: string): Promise<boolean> {
+    return this.isElementVisible(this.getContactRowByName(fullName), 5000);
+  }
+
+  /**
+   * Click the Edit icon for a specific contact row.
+   */
+  async editContact(fullName: string): Promise<void> {
+    Logger.step(`Clicking Edit for contact: "${fullName}"`);
+    const editIcon = this.getContactRowByName(fullName)
+      .locator('a[title="Edit"], .fa-edit, [class*="edit"]')
+      .first();
+    await editIcon.click();
+    await this.wait(500);
+  }
+
+  /**
+   * Click the Delete icon for a specific contact row.
+   */
+  async deleteContact(fullName: string): Promise<void> {
+    Logger.step(`Clicking Delete for contact: "${fullName}"`);
+    const deleteIcon = this.getContactRowByName(fullName)
+      .locator('a[title="Delete"], .fa-trash, [class*="delete"]')
+      .first();
+    await deleteIcon.click();
+    await this.wait(500);
+  }
+
+  /* ── Contact tab pagination buttons ── */
+  async clickContactBack(): Promise<void> {
+    await this.clickElement(this.contactBackButton, 'Contact Back button');
+    await this.waitForPageLoad();
+  }
+
+  async clickContactNext(): Promise<void> {
+    await this.clickElement(this.contactNextButton, 'Contact Next button');
+    await this.waitForPageLoad();
+  }
+
+  async clickContactExit(): Promise<void> {
+    await this.clickElement(this.contactExitButton, 'Contact Exit button');
+    await this.waitForPageLoad();
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+   * DOCUMENTS – ACTION METHODS
+   * ═══════════════════════════════════════════════════════════ */
+
+  /**
+   * Click "Add New Document" to open the modal.
+   */
+  async clickAddNewDocument(): Promise<void> {
+    Logger.step('Clicking "Add New Document"');
+    await this.clickElement(this.addNewDocumentLink, 'Add New Document link');
+    await this.page.waitForSelector('.modal:visible', { timeout: 10000 });
+    Logger.success('Add Document modal opened');
+  }
+
+  /**
+   * Fill and submit the Add Document modal.
+   */
+  async fillAndSubmitDocumentModal(data: {
+    documentType: string;
+    filePath: string;
+    documentName: string;
+    isConfidential: boolean;
+    description?: string;
+  }): Promise<void> {
+    Logger.step(`Adding document: "${data.documentName}"`);
+
+    await this.documentTypeDropdown.waitFor({ state: 'visible', timeout: 8000 });
+    await this.documentTypeDropdown.selectOption({ label: data.documentType });
+
+    // File upload
+    await this.uploadDocumentInput.setInputFiles(data.filePath);
+
+    await this.fillInput(this.documentNameInput, data.documentName, 'Document Name');
+
+    if (data.isConfidential) {
+      await this.documentConfidentialYes.check();
     } else {
-      Logger.warn(`Expected ${tabName} to be active, but got: ${activeTab}`);
+      await this.documentConfidentialNo.check();
     }
+
+    if (data.description) {
+      await this.fillInput(this.documentDescriptionTextarea, data.description, 'Description');
+    }
+
+    await this.clickElement(this.addDocumentSubmitButton, 'Add Document Submit');
+    await this.page.waitForSelector('.modal:visible', { state: 'hidden', timeout: 10000 });
+    await this.wait(600);
+    Logger.success(`Document "${data.documentName}" uploaded`);
+  }
+
+  async cancelAddDocumentModal(): Promise<void> {
+    Logger.step('Cancelling Add Document modal');
+    await this.clickElement(this.addDocumentCancelButton, 'Add Document Cancel button');
+    await this.wait(400);
+    Logger.success('Add Document modal cancelled');
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+   * SUB PROGRAMS – ACTION METHODS
+   * ═══════════════════════════════════════════════════════════ */
+
+  /**
+   * Click "Add New Sub Program" to open the modal.
+   */
+  async clickAddNewSubProgram(): Promise<void> {
+    Logger.step('Clicking "Add New Sub Program"');
+    await this.clickElement(this.addNewSubProgramLink, 'Add New Sub Program link');
+    await this.page.waitForSelector('.modal:visible', { timeout: 10000 });
+    Logger.success('Add Sub Program modal opened');
   }
 
   /**
-   * Get program name from header
+   * Fill and submit the Add Sub Program modal.
+   * @param data.subProgramCode – required
+   * @param data.subProgramName – required
+   * @param data.primaryContact – optional; label in dropdown
+   * @param data.secondaryContact – optional
+   * @param data.description – optional
    */
-  async getProgramNameFromHeader(): Promise<string | null> {
-    const headerText = await this.pageHeader.textContent();
-    return headerText;
+  async fillAndSubmitSubProgramModal(data: {
+    subProgramCode: string;
+    subProgramName: string;
+    primaryContact?: string;
+    secondaryContact?: string;
+    description?: string;
+  }): Promise<void> {
+    Logger.step(`Adding sub-program: "${data.subProgramName}"`);
+
+    await this.subProgramCodeInput.waitFor({ state: 'visible', timeout: 8000 });
+    await this.fillInput(this.subProgramCodeInput, data.subProgramCode, 'Sub Program Code');
+    await this.fillInput(this.subProgramNameInput, data.subProgramName, 'Sub Program Name');
+
+    if (data.primaryContact) {
+      await this.subProgramPrimaryContactDropdown.selectOption({ label: data.primaryContact });
+    }
+    if (data.secondaryContact) {
+      await this.subProgramSecondaryContactDropdown.selectOption({ label: data.secondaryContact });
+    }
+    if (data.description) {
+      await this.fillInput(this.subProgramDescriptionTextarea, data.description, 'Description');
+    }
+
+    await this.clickElement(this.addSubProgramSubmitButton, 'Add Sub Program Submit');
+    await this.page.waitForSelector('.modal:visible', { state: 'hidden', timeout: 10000 });
+    await this.wait(600);
+    Logger.success(`Sub Program "${data.subProgramName}" added`);
+  }
+
+  async cancelAddSubProgramModal(): Promise<void> {
+    Logger.step('Cancelling Add Sub Program modal');
+    await this.clickElement(this.addSubProgramCancelButton, 'Add Sub Program Cancel button');
+    await this.wait(400);
+    Logger.success('Add Sub Program modal cancelled');
+  }
+
+  /**
+   * Returns the row locator for a sub-program by its code or name.
+   */
+  getSubProgramRow(identifier: string): Locator {
+    return this.page.locator(`tr:has-text("${identifier}")`).first();
+  }
+
+  async isSubProgramVisible(identifier: string): Promise<boolean> {
+    return this.isElementVisible(this.getSubProgramRow(identifier), 5000);
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+   * VERIFICATION HELPERS
+   * ═══════════════════════════════════════════════════════════ */
+
+  /**
+   * Verify the Edit Program page is loaded.
+   * Checks URL pattern and key structural elements.
+   */
+  async verifyEditProgramPageLoaded(): Promise<void> {
+    Logger.step('Verifying Edit Program page is loaded');
+    await this.page.waitForURL('**/edit_program/**', { timeout: 15000 });
+
+    // All 7 sidebar tabs must be present
+    await this.verifyElementVisible(this.programInformationDetailsTab, 'Program Information Details tab');
+    await this.verifyElementVisible(this.contactInformationTab,        'Contact Information tab');
+    await this.verifyElementVisible(this.documentsTab,                  'Documents tab');
+    await this.verifyElementVisible(this.subProgramsTab,                'Sub Programs tab');
+    await this.verifyElementVisible(this.grantsTab,                     'Grants tab');
+    await this.verifyElementVisible(this.programFundingTab,             'Program Funding tab');
+    await this.verifyElementVisible(this.applicationQuestionsTab,       'Application Questions tab');
+
+    Logger.success('Edit Program page loaded and all sidebar tabs visible');
+  }
+
+  /**
+   * Verify the 4 accordion sections are visible on the Program Information Details tab.
+   */
+  async verifyAllAccordionsVisible(): Promise<void> {
+    Logger.step('Verifying all accordion sections are visible');
+    await this.verifyElementVisible(this.programBasicInfoAccordion,       'Program Basic Information accordion');
+    await this.verifyElementVisible(this.requiredTabsAccordion,            'Required Tabs accordion');
+    await this.verifyElementVisible(this.supportingDocsAccordion,          'Supporting Documents accordion');
+    await this.verifyElementVisible(this.awardAmountAllocationAccordion,   'Award Amount Allocation accordion');
+    Logger.success('All accordion sections verified');
+  }
+
+  /**
+   * Verify the note message (Please Add At Least One Contact) is shown.
+   */
+  async verifyContactNoteVisible(): Promise<void> {
+    await this.verifyElementVisible(this.contactNoteMessage, 'Contact note message');
+  }
+
+  /**
+   * Verify the Add Contact Information modal is open.
+   */
+  async verifyAddContactModalOpen(): Promise<void> {
+    await this.verifyElementVisible(this.addContactModal, 'Add Contact modal');
+    await this.verifyElementVisible(this.contactNameDropdown,     '*Name dropdown');
+    await this.verifyElementVisible(this.contactMobileNumberInput,'Mobile Number input');
+    await this.verifyElementVisible(this.addContactSubmitButton,  'Submit button');
+    await this.verifyElementVisible(this.addContactCancelButton,  'Cancel button');
+    Logger.success('Add Contact Information modal verified');
+  }
+
+  /**
+   * Verify the Add Document modal is open.
+   */
+  async verifyAddDocumentModalOpen(): Promise<void> {
+    await this.verifyElementVisible(this.addDocumentModal,            'Add Document modal');
+    await this.verifyElementVisible(this.documentTypeDropdown,        '*Document Type dropdown');
+    await this.verifyElementVisible(this.uploadDocumentInput,         '*Upload Document input');
+    await this.verifyElementVisible(this.documentNameInput,           '*Document Name input');
+    await this.verifyElementVisible(this.documentConfidentialYes,     'Confidential Yes radio');
+    await this.verifyElementVisible(this.documentConfidentialNo,      'Confidential No radio');
+    await this.verifyElementVisible(this.addDocumentSubmitButton,     'Submit button');
+    await this.verifyElementVisible(this.addDocumentCancelButton,     'Cancel button');
+    Logger.success('Add Document modal verified');
+  }
+
+  /**
+   * Verify the Add Sub Program modal is open.
+   */
+  async verifyAddSubProgramModalOpen(): Promise<void> {
+    await this.verifyElementVisible(this.addSubProgramModal,                'Add Sub Program modal');
+    await this.verifyElementVisible(this.subProgramProgramDropdown,         '*Program dropdown');
+    await this.verifyElementVisible(this.subProgramCodeInput,               '*Sub Program Code input');
+    await this.verifyElementVisible(this.subProgramNameInput,               '*Sub Program Name input');
+    await this.verifyElementVisible(this.subProgramPrimaryContactDropdown,   'Primary Contact dropdown');
+    await this.verifyElementVisible(this.subProgramSecondaryContactDropdown, 'Secondary Contact dropdown');
+    await this.verifyElementVisible(this.subProgramDescriptionTextarea,      'Description textarea');
+    await this.verifyElementVisible(this.addSubProgramSubmitButton,          'Submit button');
+    await this.verifyElementVisible(this.addSubProgramCancelButton,          'Cancel button');
+    Logger.success('Add Sub Program modal verified');
+  }
+
+  /**
+   * Get the program name shown in the page header banner.
+   * e.g. "Edit Program for Test Program 12345"
+   */
+  async getEditProgramHeaderText(): Promise<string> {
+    const bannerText = await this.page
+      .locator('text=/Edit Program for/i')
+      .first()
+      .textContent();
+    Logger.info(`Edit Program header: ${bannerText}`);
+    return bannerText?.trim() || '';
   }
 }
