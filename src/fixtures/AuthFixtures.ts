@@ -5,34 +5,22 @@ import { Paths } from '@constants/Paths';
 import { Logger } from '@utils/logger';
 
 // Page Objects
-import { PublicPage } from '@pages/public/PublicPage';
+import { LoginPage } from '@pages/LoginPage';
 import { ProgramsPage } from '@pages/programs/ProgramsPage';
-import { AddProgramPage } from '@pages/programs/AddProgramPage';
-import { EditProgramPage } from '@pages/programs/EditProgramPage';
-import { StaffLoginPage } from '@pages/auth/staff/StaffLoginPage';
-import { OrganizationLoginPage } from '@pages/auth/organization/OrganizationLoginPage';
-import { IndividualLoginPage } from '@pages/auth/individual/IndividualLoginPage';
 
 /* ==================== TYPES ==================== */
 type Fixtures = {
   // ✅ Authenticated fixtures (with session)
-  grantorPage: Page;
-  granteePage: Page;
-  orgPage: Page;
-  individualPage: Page;
-
+  userLogin: Page;
+  
   // ✅ Guest fixtures (no session - for registration/login tests)
-  guestPage: Page;
+  guestLogin: Page;
   
 
   // ✅ Page objects
-  staffLoginPage:StaffLoginPage;
-  organizationLoginPage:OrganizationLoginPage;
-  individualLoginPage:IndividualLoginPage;
-  publicPage: PublicPage;
+  loginPage: LoginPage;
   programsPage: ProgramsPage;
-  addProgramPage: AddProgramPage;
-  editProgramPage: EditProgramPage;
+  
 };
 
 /* ==================== HELPER FUNCTIONS ==================== */
@@ -46,7 +34,7 @@ function ensureAuthDirectoryExists(): void {
 
 function isSessionValid(page: Page): boolean {
   const url = page.url();
-  const isValid = url.includes('/profiles/dashboard');
+  const isValid = url.includes('/dashboard');
   Logger.info(`Session validation: ${isValid ? '✅ Valid' : '❌ Invalid'} - URL: ${url}`);
   return isValid;
 }
@@ -77,7 +65,7 @@ function deleteStaleAuthFile(authFile: string, role: string): void {
 async function createAuthenticatedPage(
   browser: any,
   authFile: string,
-  role: 'Grantor' | 'Grantee' |'Organization' | 'individual'
+  role: 'Administrator'
 ): Promise<Page> {
   ensureAuthDirectoryExists();
 
@@ -97,7 +85,7 @@ async function createAuthenticatedPage(
 
   const page = await context.newPage();
 
-  await page.goto('/profiles/dashboard', {
+  await page.goto('/dashboard', {
     waitUntil: 'networkidle',
     timeout: 20000
   });
@@ -109,7 +97,7 @@ async function createAuthenticatedPage(
 
     await loginAs(page, role);
 
-    await page.waitForURL('**/profiles/dashboard', { timeout: 20000 });
+    await page.waitForURL('**/dashboard', { timeout: 20000 });
     await page.waitForLoadState('networkidle');
 
     await context.storageState({ path: authFile });
@@ -146,48 +134,16 @@ export const test = base.extend<Fixtures>({
 
   /* ==================== AUTHENTICATED FIXTURES ==================== */
 
-  grantorPage: async ({ browser }, use) => {
-    const page = await createAuthenticatedPage(
-      browser,
-      Paths.STAFF_AUTH_FILE,
-      'Grantor'
-    );
-    await use(page);
-    await page.context().close();
-    Logger.info('🧹 Grantor user fixture cleaned up');
-  },
+  userLogin : async ({ browser }, use) => {
 
-  granteePage: async ({ browser }, use) => {
     const page = await createAuthenticatedPage(
       browser,
-      Paths.STAFF_AUTH_FILE,
-      'Grantor'
+      Paths.AUTH_FILE,
+      'Administrator'
     );
     await use(page);
     await page.context().close();
-    Logger.info('🧹 Grantee user fixture cleaned up');
-  },
-
-  orgPage: async ({ browser }, use) => {
-    const page = await createAuthenticatedPage(
-      browser,
-      Paths.ORG_AUTH_FILE,
-      'Organization'
-    );
-    await use(page);
-    await page.context().close();
-    Logger.info('🧹 Organization user fixture cleaned up');
-  },
-
-  individualPage: async ({ browser }, use) => {
-    const page = await createAuthenticatedPage(
-      browser,
-      Paths.INDIVIDUAL_AUTH_FILE,
-      'individual'
-    );
-    await use(page);
-    await page.context().close();
-    Logger.info('🧹 Individual user fixture cleaned up');
+    Logger.info('🧹user fixture cleaned up');
   },
 
   /* ==================== GUEST FIXTURES (NO SESSION) ==================== */
@@ -196,7 +152,7 @@ export const test = base.extend<Fixtures>({
    * Generic guest page - no authentication
    * Use for: Registration tests, login tests, public page tests
    */
-  guestPage: async ({ browser }, use) => {
+  guestLogin: async ({ browser }, use) => {
     const page = await createGuestPage(browser);
     await use(page);
     await page.context().close();
@@ -206,33 +162,15 @@ export const test = base.extend<Fixtures>({
 
   /* ==================== PAGE OBJECT FIXTURES ==================== */
 
-  staffLoginPage: async({ guestPage}, use) =>{
-    await use( new StaffLoginPage(guestPage));
+  loginPage: async({ guestLogin}, use) =>{
+    await use( new LoginPage(guestLogin));
   },
   
-  organizationLoginPage: async({ guestPage}, use) =>{
-    await use( new OrganizationLoginPage(guestPage));
+  programsPage: async ({ userLogin }, use) => {
+    await use(new ProgramsPage(userLogin));
   },
 
-   individualLoginPage: async({ guestPage}, use) =>{
-    await use( new IndividualLoginPage(guestPage));
-  },
 
-  publicPage: async ({ guestPage }, use) => {
-    await use(new PublicPage(guestPage));
-  },
-
-  programsPage: async ({ grantorPage }, use) => {
-    await use(new ProgramsPage(grantorPage));
-  },
-
-  addProgramPage: async ({ grantorPage }, use) => {
-    await use(new AddProgramPage(grantorPage));
-  },
-
-  editProgramPage: async ({ grantorPage }, use) => {
-    await use(new EditProgramPage(grantorPage));
-  },
 });
 
 /* ==================== GLOBAL HOOKS ==================== */

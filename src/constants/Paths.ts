@@ -41,9 +41,8 @@ export class Paths {
   // Auth files — one per user role, reused across test runs to avoid repeated logins
   // If a session is rejected by the server, AuthFixtures.ts will automatically
   // delete the stale file and create a fresh one via re-login
-  static readonly STAFF_AUTH_FILE = path.join(this.AUTH_FOLDER_PATH, 'staffLogin.json');
-  static readonly ORG_AUTH_FILE = path.join(this.AUTH_FOLDER_PATH, 'orgLogin.json');
-  static readonly INDIVIDUAL_AUTH_FILE = path.join(this.AUTH_FOLDER_PATH, 'individualLogin.json');
+  static readonly AUTH_FILE = path.join(this.AUTH_FOLDER_PATH, 'login.json');
+  
 
   // Report folders
   static readonly TEST_RESULTS = path.join(this.PROJECT_ROOT, 'test-results');

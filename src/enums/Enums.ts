@@ -8,11 +8,6 @@ export enum ExcelOutputType {
   CSV = 'csv'
 }
 
-export enum LoginPortalHeaders {
-  STAFF_LOGIN_PORTAL_TITLE = 'Staff Login',
-  ORGANIZATION_LOGIN_PORTAL_TITLE = 'Organization Portal Sign In',
-  INDIVIDUAL_LOGIN_PORTAL_TITLE = 'Individual Portal Sign In'
-}
 
 export enum MainMenu {
   DASHBOARD = 'Dashboard',
@@ -30,12 +25,6 @@ export enum SubMenu {
   MASTER_FUNDING_SOURCES = 'Master Funding Sources'
 }
 
-export enum DashboardHeaders {
-  STAFF_GRANTOR_DASHBOARD_HEADER = 'Staff User - Grantor Portal',
-  STAFF_GRANTEE_DASHBOARD_HEADER = 'Staff User - Grantee Portal',
-  ORGANIZATION_DASHBOARD_HEADER= 'Organization User - Applicant Portal',
-  INDIVIDUAL_DASHBOARD_HEADER = 'Individual User - Applicant Portal'
-}
 
 export enum PageHeaders {
   DASHBOARD = 'Dashboard',
@@ -56,11 +45,6 @@ export enum AddNewLinkText {
   MASTER_FUNDING_SOURCE = 'Add New Master Funding Source'
 }
 
-export enum UserType {
-  STAFF = 'staff',
-  ORGANIZATION = 'Organization',
-  INDIVIDUAL = 'individual'
-}
 
 export enum BrowserType {
   CHROMIUM = 'chromium',

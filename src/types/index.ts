@@ -12,7 +12,7 @@ export interface OrganizationCredentials extends UserCredentials {
   organization: string;
 }
 
-export type UserRole = 'Grantor' | 'Grantee' | 'Organization' | 'individual';
+export type UserRole = 'Administrator';
 
 export interface TestData {
   username: string;
@@ -38,14 +38,11 @@ export interface PageFixtures {
 }
 
 export interface EnvironmentVariables {
-  ISSI_GMS_URL: string;
-  STAFF_USERNAME: string;
-  STAFF_PASSWORD: string;
-  ORG_USERNAME: string;
-  ORG_PASSWORD: string;
-  ORG_NAME: string;
-  IND_USERNAME: string;
-  IND_PASSWORD: string;
+  URL: string;
+  USERNAME: string;
+  PASSWORD: string;
+  INVALID_USERNAME: string;
+  INVALID_PASSWORD: string;
   DEBUG?: string;
   HEADLESS?: string;
 }
