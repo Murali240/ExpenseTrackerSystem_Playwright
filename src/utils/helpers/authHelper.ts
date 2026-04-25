@@ -29,13 +29,13 @@ export async function loginAs(page: Page, role: UserRole): Promise<void> {
       
       case 'Administrator':
         await loginPage.doLogin(
-         process.env.STAFF_USERNAME!,
-         process.env.STAFF_PASSWORD!,
+         process.env.APP_USERNAME!,
+         process.env.APP_PASSWORD!,
           'Administrator'
         );
         break;
 
-      case 'Grantee':
+      case 'Administrator':
         await loginPage.doLogin(
          process.env.STAFF_USERNAME!,
          process.env.STAFF_PASSWORD!,

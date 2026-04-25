@@ -83,3 +83,9 @@ yarn-error.log*
 # You have a tests_backup folder - decide if this should be in git
 # Uncomment to ignore it:
 # tests_backup_*/
+
+node_modules/
+.env
+.tmp/
+playwright-report/
+test-results/

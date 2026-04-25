@@ -1,59 +1,44 @@
 {
   "name": "playwrightframework",
   "version": "1.0.0",
-  "description": "Playwright Test Automation Framework for ISSI GMS Application",
+  "description": "Playwright Test Automation Framework for MM Manager Application",
   "main": "index.js",
+
   "scripts": {
-    "pretest": "npm run clean:auth",
-    "pretest:headed": "npm run clean:auth",
-    "pretest:smoke": "npm run clean:auth",
-    "pretest:regression": "npm run clean:auth",
-    "pretest:programs": "npm run clean:auth",
-    "pretest:ci": "npm run clean:auth",
-    "test": "playwright test",
-    "test:headed": "playwright test --headed",
-    "test:debug": "playwright test --debug",
-    "test:ui": "playwright test --ui",
-    "test:chrome": "playwright test --project=chromium",
-    "test:firefox": "playwright test --project=firefox",
-    "test:webkit": "playwright test --project=webkit",
-    "test:all-browsers": "playwright test --project=chromium --project=firefox --project=webkit",
-    "test:parallel": "playwright test --workers=4",
-    "test:serial": "playwright test --workers=1",
-    "test:smoke": "playwright test --grep @smoke",
-    "test:regression": "playwright test --grep @regression",
-    "test:negative": "playwright test --grep @negative",
-    "test:e2e": "playwright test --grep @e2e",
-    "test:programs": "playwright test --grep @programs",
-    "test:grants": "playwright test --grep @grants",
-    "test:tag": "playwright test --grep",
-    "test:quick": "playwright test --project=chromium --grep @smoke",
-    "test:no-cleanup": "playwright test",
-    "report": "playwright show-report",
-    "report:html": "playwright show-report playwright-report",
-    "report:open": "open playwright-report/index.html",
-    "report:latest": "playwright show-report $(ls -td playwright-report-* | head -1)",
-    "allure:generate": "allure generate ./allure-results --clean -o ./allure-report",
-    "allure:open": "allure open ./allure-report",
-    "allure:serve": "allure serve ./allure-results",
-    "allure:clean": "rimraf allure-results allure-report",
-    "clean:auth": "rimraf .auth",
-    "clean:reports": "rimraf test-results playwright-report allure-results allure-report",
-    "clean:old-reports": "find . -maxdepth 1 -name 'playwright-report-*' -mtime +7 -exec rm -rf {} +",
-    "clean:all": "rimraf test-results playwright-report allure-results allure-report .auth",
-    "clean:nuclear": "rimraf test-results playwright-report allure-results allure-report .auth node_modules package-lock.json",
+    "pretest": "npm run clean:allure && npm run clean:auth",
+
+    "test": "npm run clean:allure && playwright test",
+    "test:headed": "npm run clean:allure && playwright test --headed",
+
+    "test:chrome": "npm run clean:allure && playwright test --project=chromium",
+    "test:firefox": "npm run clean:allure && playwright test --project=firefox",
+    "test:webkit": "npm run clean:allure && playwright test --project=webkit",
+
+    "test:all-browsers": "npm run clean:allure && playwright test --project=chromium --project=firefox --project=webkit",
+
+    "test:smoke": "npm run clean:allure && playwright test --grep @smoke",
+    "test:regression": "npm run clean:allure && playwright test --grep @regression",
+    "test:negative": "npm run clean:allure && playwright test --grep @negative",
+    "test:e2e": "npm run clean:allure && playwright test --grep @e2e",
+
+    "report:generate": "allure generate allure-results --clean -o allure-report",
+    "report:open": "allure open allure-report",
+
+    "report:full": "npm run clean:allure && playwright test && npm run report:generate && npm run report:open",
+
+    "run:fresh": "npx rimraf allure-results allure-report test-results && playwright test && allure generate allure-results --clean -o allure-report && allure open allure-report",
+
+    "clean:auth": "npx rimraf .auth",
+    "clean:allure": "npx rimraf allure-results allure-report",
+    "clean:reports": "npx rimraf test-results playwright-report allure-results allure-report",
+    "clean:all": "npx rimraf test-results playwright-report allure-results allure-report .auth",
+
     "setup": "npm install && npx playwright install --with-deps",
     "setup:ci": "npm ci && npx playwright install --with-deps",
-    "postinstall": "npx playwright install chromium",
-    "ci": "npm run clean:auth && playwright test",
-    "ci:smoke": "npm run clean:auth && playwright test --grep @smoke",
-    "ci:regression": "npm run clean:auth && playwright test --grep @regression",
-    "ci:parallel": "npm run clean:auth && playwright test --workers=3",
-    "validate:env": "node -e \"require('dotenv').config(); const required = ['ISSI_GMS_URL', 'STAFF_USERNAME', 'STAFF_PASSWORD', 'ORG_USERNAME', 'ORG_PASSWORD', 'ORG_NAME', 'IND_USERNAME', 'IND_PASSWORD']; const missing = required.filter(v => !process.env[v]); if (missing.length) { console.error('❌ Missing env vars:', missing); process.exit(1); } console.log('✅ All env vars present');\"",
-    "lint": "eslint .",
-    "format": "prettier --write \"**/*.{ts,json,md}\"",
-    "type-check": "tsc --noEmit"
+
+    "postinstall": "npx playwright install chromium"
   },
+
   "keywords": [
     "playwright",
     "typescript",
@@ -62,23 +47,24 @@
     "e2e",
     "test-framework"
   ],
-  "author": "Rajasekhar",
+
+  "author": "Kolusu Murali Krishna",
   "license": "ISC",
+
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
     "@playwright/test": "^1.57.0",
     "@types/node": "^25.0.3",
     "allure-playwright": "^3.4.5",
     "eslint": "^9.39.2",
-    "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.7.4",
     "rimraf": "^6.1.3",
     "typescript-eslint": "^8.50.0"
   },
+
   "dependencies": {
     "allure-commandline": "^2.36.0",
-    "csv": "^6.4.1",
     "dotenv": "^17.2.3",
+    "csv": "^6.4.1",
     "xlsx": "^0.18.5"
   }
 }

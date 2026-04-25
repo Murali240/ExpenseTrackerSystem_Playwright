@@ -6,21 +6,24 @@ import { Logger } from '@utils/logger';
 
 // Page Objects
 import { LoginPage } from '@pages/LoginPage';
-import { ProgramsPage } from '@pages/programs/ProgramsPage';
+import { DashboardPage } from '@pages/DashboardPage';
+// import { DiaryPage } from '@pages/DiaryPage';
+import { MeetingsPage } from '@pages/MeetingsPage';
+import { UserRole } from '../types';
 
 /* ==================== TYPES ==================== */
 type Fixtures = {
-  // ✅ Authenticated fixtures (with session)
-  userLogin: Page;
-  
-  // ✅ Guest fixtures (no session - for registration/login tests)
-  guestLogin: Page;
-  
+  // ✅ Authenticated fixtures (with saved session)
+  authPage: Page;
+
+  // ✅ Guest fixtures (no session)
+  guestPage: Page;
 
   // ✅ Page objects
   loginPage: LoginPage;
-  programsPage: ProgramsPage;
-  
+  dashboardPage: DashboardPage;
+  // diaryPage: DiaryPage;
+  meetingsPage: MeetingsPage;
 };
 
 /* ==================== HELPER FUNCTIONS ==================== */
@@ -33,10 +36,15 @@ function ensureAuthDirectoryExists(): void {
 }
 
 function isSessionValid(page: Page): boolean {
-  const url = page.url();
-  const isValid = url.includes('/dashboard');
-  Logger.info(`Session validation: ${isValid ? '✅ Valid' : '❌ Invalid'} - URL: ${url}`);
-  return isValid;
+  try {
+    const parsedUrl = new URL(page.url());
+    const isValid = parsedUrl.pathname === '/dashboard' || parsedUrl.pathname.startsWith('/dashboard');
+    Logger.info(`Session validation: ${isValid ? '✅ Valid' : '❌ Invalid'} - URL: ${page.url()}`);
+    return isValid;
+  } catch (error) {
+    Logger.error('Failed to parse session URL', error);
+    return false;
+  }
 }
 
 function hasValidCookies(authFile: string): boolean {
@@ -65,7 +73,7 @@ function deleteStaleAuthFile(authFile: string, role: string): void {
 async function createAuthenticatedPage(
   browser: any,
   authFile: string,
-  role: 'Administrator'
+  role: UserRole
 ): Promise<Page> {
   ensureAuthDirectoryExists();
 
@@ -84,22 +92,27 @@ async function createAuthenticatedPage(
   });
 
   const page = await context.newPage();
-
-  await page.goto('/dashboard', {
-    waitUntil: 'networkidle',
-    timeout: 20000
-  });
+  try {
+    await page.goto('/dashboard', {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000,
+    });
+    await page.waitForLoadState('networkidle', { timeout: 60000 }).catch(() => {});
+  } catch (error) {
+    Logger.warn('Dashboard route did not load cleanly, retrying with default navigation path');
+    await page.goto('/dashboard', {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000,
+    });
+    await page.waitForLoadState('networkidle', { timeout: 60000 }).catch(() => {});
+  }
 
   if (!isSessionValid(page)) {
-    Logger.warn(`⚠️  Server rejected ${role} session - performing fresh login`);
-
+    Logger.warn(`⚠️  Session invalid for ${role} - performing fresh login`);
     deleteStaleAuthFile(authFile, role);
-
     await loginAs(page, role);
-
     await page.waitForURL('**/dashboard', { timeout: 20000 });
     await page.waitForLoadState('networkidle');
-
     await context.storageState({ path: authFile });
     Logger.success(`✅ Fresh ${role} session saved`);
   } else {
@@ -115,13 +128,10 @@ async function createAuthenticatedPage(
 async function createGuestPage(browser: any): Promise<Page> {
   Logger.info(`⚙️  Setting up GUEST page (no authentication)`);
 
-  // ✅ Create context WITHOUT any stored session
-  const context = await browser.newContext(); // NO storageState - fresh browser session
-
+  const context = await browser.newContext();
   const page = await context.newPage();
-
-  // ✅ Go to public homepage (not dashboard)
-  await page.goto('/', { waitUntil: 'networkidle' });
+  await page.goto('/accounts/login', { waitUntil: 'load', timeout: 60000 });
+  await page.waitForLoadState('load', { timeout: 60000 });
 
   Logger.success(`✅ Guest page ready (unauthenticated)`);
 
@@ -134,16 +144,11 @@ export const test = base.extend<Fixtures>({
 
   /* ==================== AUTHENTICATED FIXTURES ==================== */
 
-  userLogin : async ({ browser }, use) => {
-
-    const page = await createAuthenticatedPage(
-      browser,
-      Paths.AUTH_FILE,
-      'Administrator'
-    );
+  authPage: async ({ browser }, use) => {
+    const page = await createAuthenticatedPage(browser, Paths.AUTH_FILE, 'Administrator');
     await use(page);
     await page.context().close();
-    Logger.info('🧹user fixture cleaned up');
+    Logger.info('🧹 Authenticated user fixture cleaned up');
   },
 
   /* ==================== GUEST FIXTURES (NO SESSION) ==================== */
@@ -152,7 +157,7 @@ export const test = base.extend<Fixtures>({
    * Generic guest page - no authentication
    * Use for: Registration tests, login tests, public page tests
    */
-  guestLogin: async ({ browser }, use) => {
+  guestPage: async ({ browser }, use) => {
     const page = await createGuestPage(browser);
     await use(page);
     await page.context().close();
@@ -162,15 +167,21 @@ export const test = base.extend<Fixtures>({
 
   /* ==================== PAGE OBJECT FIXTURES ==================== */
 
-  loginPage: async({ guestLogin}, use) =>{
-    await use( new LoginPage(guestLogin));
-  },
-  
-  programsPage: async ({ userLogin }, use) => {
-    await use(new ProgramsPage(userLogin));
+  loginPage: async ({ guestPage }, use) => {
+    await use(new LoginPage(guestPage));
   },
 
+  dashboardPage: async ({ authPage }, use) => {
+    await use(new DashboardPage(authPage));
+  },
 
+  // diaryPage: async ({ authPage }, use) => {
+  //   await use(new DiaryPage(authPage));
+  // },
+
+  meetingsPage: async ({ authPage }, use) => {
+    await use(new MeetingsPage(authPage));
+  },
 });
 
 /* ==================== GLOBAL HOOKS ==================== */

@@ -10,14 +10,13 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
   dotenv.config({ path: path.resolve(__dirname, '.env') });
 
   const required = [
-    'ISSI_GMS_URL',
-    'STAFF_USERNAME',
-    'STAFF_PASSWORD',
-    'ORG_USERNAME',
-    'ORG_PASSWORD',
-    'ORG_NAME',
-    'IND_USERNAME',
-    'IND_PASSWORD',
+    'Base_URL',
+    'APP_USERNAME',
+    'APP_PASSWORD',
+    'LDAP_USERNAME',
+    'LDAP_PASSWORD',
+    'INVALID_USERNAME',
+    'INVALID_PASSWORD',
   ] as const;
 
   const missing = required.filter((key) => !process.env[key]?.trim());

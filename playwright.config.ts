@@ -1,10 +1,29 @@
 import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 import path from 'path';
+import os from 'os';
 
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const globalSetupPath = path.resolve(__dirname, 'global-setup.ts');
+
+// Detect current OS for dynamic environment info
+const rawOsRelease = os.release();
+const osType = os.platform() === 'win32' ? 'Windows' : os.platform() === 'darwin' ? 'macOS' : 'Linux';
+const osEdition = osType === 'Windows'
+  ? rawOsRelease.startsWith('10.0') && Number(rawOsRelease.split('.')[2] || '0') >= 22000
+    ? 'Windows 11'
+    : 'Windows 10'
+  : osType;
+const environmentInfo = {
+  framework: 'Playwright',
+  language: 'TypeScript',
+  application: 'MMManager',
+  environment: 'Local',
+  os: osEdition,
+  osVersion: rawOsRelease,
+};
+
 
 /**
  * Playwright Test Configuration
@@ -54,14 +73,14 @@ export default defineConfig({
           environmentInfo: {
             framework: 'Playwright',
             language: 'TypeScript',
-            application: 'ISSI GMS',
-            environment: 'Local - MacBook Air 13.3"'
+            application: 'MM Manager',
+              environmentInfo: environmentInfo
           }
         }]
       ],
 
   use: {
-    baseURL: process.env.ISSI_GMS_URL,
+    baseURL: process.env.Base_URL,
     trace: process.env.CI ? 'retain-on-failure' : 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -116,6 +135,21 @@ export default defineConfig({
           use: { 
             ...devices['Desktop Chrome'],
             viewport: { width: 1440, height: 900 },  // ✅ Best for testing
+          },
+        },
+
+         {
+          name: 'firefox',
+          use: {
+            ...devices['Desktop Firefox'],
+            viewport: { width: 1440, height: 900 },
+          },
+        },
+        {
+          name: 'webkit',
+          use: {
+            ...devices['Desktop Safari'],
+            viewport: { width: 1440, height: 900 },
           },
         },
       ],

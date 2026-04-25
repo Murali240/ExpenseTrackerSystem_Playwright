@@ -1,34 +1,36 @@
-import { PublicPage } from "@pages/public/PublicPage";
+import { SharedComponents } from "@pages/base/SharedComponents";
 import { Locator, Page } from "@playwright/test";
 import { Logger } from "@utils/logger";
 
 
-export class LoginPage extends PublicPage {
+export class LoginPage extends SharedComponents {
     
     
-    readonly grantorRadioButton: Locator;
-    readonly granteeRadioButton: Locator;
-    readonly grantorDashboardHeader: Locator;
-    readonly granteeDashboardHeader: Locator;
+    readonly userNameField: Locator;
+    readonly passwordField: Locator;
+    readonly loginButton: Locator;
+    readonly dashboardHeader: Locator;
+    readonly loginErrorMessage: Locator;
     
 
     constructor(page: Page){
       super(page)
 
-      this.grantorRadioButton = this.page.locator(`div.portal-option:has(span.portal-option-title:has-text("Grantor Portal"))`);
-      this.granteeRadioButton = this.page.locator(`div.portal-option:has(span.portal-option-title:has-text("Grantee Portal"))`);
-      
-      this.grantorDashboardHeader = this.page.locator('.top-title.d-display .header-subtitle:has-text("Staff User - Grantor Portal")').first();
-      this.granteeDashboardHeader = this.page.locator('.top-title.d-display .header-subtitle:has-text("Staff User - Grantee Portal")').first();
- 
+      this.userNameField = this.page.locator(`[name="username"]`);
+      this.passwordField = this.page.locator(`[name="password"]`);
+      this.loginButton = this.page.locator('button[type="submit"]');
+
+      this.dashboardHeader = this.page.locator(`//span[normalize-space()='Dashboard']`);
+      this.loginErrorMessage = this.page.locator(`strong:has-text("Username or Password Incorrect")`);
+
     }
 
 
       /* ==================== Navigation ==================== */
 
      async goto() : Promise<void> { //When a function is marked async, it always returns a Promise.
-      await this.navigateTo('/pages/public');
-      Logger.success('on pulic homepage')
+      await this.navigateTo('/accounts/login');
+      Logger.success('on login page')
      }
 
 
