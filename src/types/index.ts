@@ -12,7 +12,9 @@ export interface OrganizationCredentials extends UserCredentials {
   organization: string;
 }
 
-export type UserRole = 'Administrator';
+export type AdministratorRole = 'Administrator';
+export type LDAPRole = 'LDAP';
+export type UserRole = AdministratorRole | LDAPRole;
 
 export interface TestData {
   username: string;

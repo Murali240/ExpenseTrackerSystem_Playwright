@@ -1,17 +1,22 @@
 [
   {
-    "username": "rmaddigalla",
-    "password": "Welcome@1990",
-    "email": "rajasekahr@email.com"
+    "username": "admin",
+    "password": "issi@1234"
   },
   {
-    "username": "rsekhar",
-    "password": "rsekhar@1990",
-    "email": "rsekhar@email.com"
+    "username": "kmkrishna",
+    "password": "Gangamma@8"
   },
   {
-    "username": "vinuthna",
-    "password": "vinuthna@1990",
-    "email": "vinuthna@email.com"
-  }
+    "username": "nsundar",
+    "password": "Chinna@123456789"
+  },
+  {
+    "username": "spilli",
+    "password": "$!V@p@V!@2329"
+  },
+  {
+    "username": "dummyUsername",
+    "password": "dummyPassword@123"
+  }  
 ]

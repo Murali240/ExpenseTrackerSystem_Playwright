@@ -43,16 +43,34 @@ export class DashboardPage extends SharedComponents {
   }
 
   async verifyScheduleMeetingPage(): Promise<void> {
-    Logger.info('Verifying Schedule Meeting page');
 
-    await this.verifyElementVisible(
-      this.scheduleMeetingHeading,
-      'Schedule Meeting heading'
-    );
+  Logger.info('Waiting for Schedule Meeting page to load');
 
-    await this.verifyElementVisible(
-      this.backToDashboardLink,
-      'Back to Dashboard link'
-    );
-  }
+  // Wait for page load/navigation
+  await this.page.waitForLoadState('networkidle');
+
+  // Wait until Schedule Meeting heading becomes visible
+  await this.waitForElement(
+    this.scheduleMeetingHeading,
+    30000
+  );
+
+  Logger.info('Verifying Schedule Meeting page');
+
+  await this.verifyElementVisible(
+    this.scheduleMeetingHeading,
+    'Schedule Meeting Heading'
+  );
+
+  await this.verifyElementVisible(
+    this.backToDashboardLink,
+    'Back to Dashboard Link'
+  );
+
+  Logger.success(
+    'Schedule Meeting page loaded successfully'
+  );
+ }
+
+
 }

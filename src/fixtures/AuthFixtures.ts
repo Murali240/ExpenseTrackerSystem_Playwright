@@ -7,7 +7,7 @@ import { Logger } from '@utils/logger';
 // Page Objects
 import { LoginPage } from '@pages/LoginPage';
 import { DashboardPage } from '@pages/DashboardPage';
-// import { DiaryPage } from '@pages/DiaryPage';
+import { DiaryPage } from '@pages/DiaryPage';
 import { MeetingsPage } from '@pages/MeetingsPage';
 import { UserRole } from '../types';
 
@@ -15,6 +15,7 @@ import { UserRole } from '../types';
 type Fixtures = {
   // ✅ Authenticated fixtures (with saved session)
   authPage: Page;
+ // ldapAuthPage: Page;
 
   // ✅ Guest fixtures (no session)
   guestPage: Page;
@@ -22,7 +23,7 @@ type Fixtures = {
   // ✅ Page objects
   loginPage: LoginPage;
   dashboardPage: DashboardPage;
-  // diaryPage: DiaryPage;
+  diaryPage: DiaryPage;
   meetingsPage: MeetingsPage;
 };
 
@@ -175,9 +176,9 @@ export const test = base.extend<Fixtures>({
     await use(new DashboardPage(authPage));
   },
 
-  // diaryPage: async ({ authPage }, use) => {
-  //   await use(new DiaryPage(authPage));
-  // },
+   diaryPage: async ({ authPage }, use) => {
+     await use(new DiaryPage(authPage));
+   },
 
   meetingsPage: async ({ authPage }, use) => {
     await use(new MeetingsPage(authPage));

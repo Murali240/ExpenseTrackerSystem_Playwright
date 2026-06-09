@@ -19,7 +19,7 @@ const environmentInfo = {
   framework: 'Playwright',
   language: 'TypeScript',
   application: 'MMManager',
-  environment: 'Local',
+  environment: 'Testing',
   os: osEdition,
   osVersion: rawOsRelease,
 };
@@ -57,7 +57,7 @@ export default defineConfig({
           environmentInfo: {
             framework: 'Playwright',
             language: 'TypeScript',
-            application: 'ISSI GMS',
+            application: 'MM Manager',
             environment: 'CI',
             nodeVersion: process.version
           }
@@ -80,7 +80,7 @@ export default defineConfig({
       ],
 
   use: {
-    baseURL: process.env.Base_URL,
+    baseURL: process.env.MMM_BASE_URL,
     trace: process.env.CI ? 'retain-on-failure' : 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -99,8 +99,8 @@ export default defineConfig({
     actionTimeout: 15000,
     navigationTimeout: 30000,
     ignoreHTTPSErrors: true,
-    locale: 'en-US',
-    timezoneId: 'America/New_York',
+    locale: 'en-IN',
+      timezoneId: 'Asia/Kolkata',
   },
 
   projects: process.env.CI 

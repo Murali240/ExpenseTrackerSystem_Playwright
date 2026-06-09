@@ -1,27 +1,42 @@
 {
   "compilerOptions": {
-    "target": "ESNext", //Write TypeScript, but output modern JavaScript.
-    "module": "commonjs",  //Use Node.js import system.
+    "target": "ESNext",
+    "module": "commonjs",
     "moduleResolution": "node",
+
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
+
     "outDir": "./dist",
     "rootDir": "./",
+
     "types": ["node", "@playwright/test"],
+
     "baseUrl": "./",
+
     "paths": {
       "@pages/*": ["src/pages/*"],
       "@fixtures/*": ["src/fixtures/*"],
       "@utils/*": ["src/utils/*"],
       "@constants/*": ["src/constants/*"],
       "@enums/*": ["src/enums/*"],
+
+      // ✅ FIXED TYPES ALIAS
+      "@types": ["src/types/index"],
       "@types/*": ["src/types/*"]
     }
   },
-  "include": ["src/**/*", "tests/**/*", "playwright.config.ts", "global-setup.ts"],
+
+  "include": [
+    "src/**/*",
+    "tests/**/*",
+    "playwright.config.ts",
+    "global-setup.ts"
+  ],
+
   "exclude": [
     "node_modules",
     "dist",

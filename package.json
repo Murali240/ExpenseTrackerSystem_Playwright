@@ -38,6 +38,9 @@
 
     "postinstall": "npx playwright install chromium"
   },
+  "scriptsDev": {
+    "generate:excel": "node src/utils/generate-sample-excel.js"
+  },
 
   "keywords": [
     "playwright",

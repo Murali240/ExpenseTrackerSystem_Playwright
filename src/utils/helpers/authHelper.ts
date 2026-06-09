@@ -29,17 +29,17 @@ export async function loginAs(page: Page, role: UserRole): Promise<void> {
       
       case 'Administrator':
         await loginPage.doLogin(
-         process.env.APP_USERNAME!,
-         process.env.APP_PASSWORD!,
+         process.env.MMM_ADMIN_USERNAME!,
+         process.env.MMM_ADMIN_PASSWORD!,
           'Administrator'
         );
         break;
 
-      case 'Administrator':
+      case 'LDAP':
         await loginPage.doLogin(
-         process.env.STAFF_USERNAME!,
-         process.env.STAFF_PASSWORD!,
-          'Administrator'
+         process.env.MMM_LDAP_USERNAME!,
+         process.env.MMM_LDAP_PASSWORD!,
+          'LDAP'
         );
         break;
 
