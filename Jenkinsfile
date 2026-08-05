@@ -17,7 +17,7 @@ pipeline {
 
         stage('Run Regression Tests') {
             steps {
-                bat 'npx playwright test --grep "@regression"'
+                bat 'npx playwright test --project=chromium --grep "@regression"'
             }
         }
 
