@@ -9,12 +9,6 @@ pipeline {
             }
         }
 
-        stage('Install Browsers') {
-            steps {
-                bat 'npx playwright install'
-            }
-        }
-
         stage('Run Regression Tests') {
             steps {
                 bat 'npx playwright test --project=chromium --grep "@regression"'
@@ -25,6 +19,21 @@ pipeline {
             steps {
                 archiveArtifacts artifacts: 'playwright-report/**', fingerprint: true
             }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'test-results/**', allowEmptyArchive: true
+            echo 'Pipeline Finished'
+        }
+
+        success {
+            echo 'Regression Suite Executed Successfully'
+        }
+
+        failure {
+            echo 'Regression Suite Failed'
         }
     }
 }
