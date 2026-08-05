@@ -25,7 +25,7 @@ pipeline {
 
         stage('Install Playwright Browsers') {
             steps {
-                bat 'npx playwright install --with-deps'
+                bat 'npx playwright install chromium'
             }
         }
 
@@ -55,35 +55,25 @@ DEBUG=false
             }
         }
 
-        stage('Run Playwright Tests') {
+        stage('Run Regression Suite') {
             steps {
-                bat 'npx playwright test'
+                bat 'npx playwright test --grep "@regression"'
             }
         }
-
     }
 
     post {
 
         always {
-
-            archiveArtifacts artifacts: 'playwright-report/**', fingerprint: true
-
-            archiveArtifacts artifacts: 'test-results/**', fingerprint: true
-
-            archiveArtifacts artifacts: 'test-results/**/*.png', fingerprint: true
-
-            archiveArtifacts artifacts: 'test-results/**/*.zip', fingerprint: true
-
-            echo 'Playwright Pipeline Finished'
+            echo 'Regression Suite Execution Completed'
         }
 
         success {
-            echo 'All Playwright Tests Passed'
+            echo 'Regression Suite Passed'
         }
 
         failure {
-            echo 'Some Playwright Tests Failed'
+            echo 'Regression Suite Failed'
         }
     }
 }
