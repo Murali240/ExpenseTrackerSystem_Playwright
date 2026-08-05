@@ -1,73 +1,130 @@
-// src/utils/authHelper.ts
+// src/utils/helpers/authHelper.ts
 
 import { Page } from '@playwright/test';
+import { LoginPage } from '../../pages/common/LoginPage';
 import { UserRole } from '../../types';
 import { Logger } from '../logger';
-import { LoginPage } from '@pages/LoginPage';
-
-
 
 /**
- * Authentication Helper
- * Handles login for different user roles with real credentials
- * Used by: AuthFixtures.ts to create authenticated sessions
+ * Returns environment variable value or throws an error.
  */
-export async function loginAs(page: Page, role: UserRole): Promise<void> {
-  //const publicPage = new PublicPage(page);
-   const loginPage = new LoginPage(page)
+function requireEnvVar(key: string): string {
+    const value = process.env[key]?.trim();
 
-  try {
-    Logger.info(`Attempting login as: ${role}`);
-
-    // Navigate to public page
-    await loginPage.goto();
-
-    // Click Login button
-    
-
-    switch (role) {
-      
-      case 'Administrator':
-        await loginPage.doLogin(
-         process.env.MMM_ADMIN_USERNAME!,
-         process.env.MMM_ADMIN_PASSWORD!,
-          'Administrator'
-        );
-        break;
-
-      case 'LDAP':
-        await loginPage.doLogin(
-         process.env.MMM_LDAP_USERNAME!,
-         process.env.MMM_LDAP_PASSWORD!,
-          'LDAP'
-        );
-        break;
-
-      default:
-        throw new Error(`Unknown role: ${role}`);
+    if (!value) {
+        throw new Error(`Missing required environment variable: ${key}`);
     }
-  } catch (error) {
-    Logger.error(`❌ Login failed for role: ${role}`, error);
-    throw error;
-  }
+
+    return value;
 }
 
 /**
- * Validate environment variables
+ * Login with specified user role.
+ */
+export async function loginAs(
+    page: Page,
+    role: UserRole
+): Promise<void> {
+
+    const loginPage = new LoginPage(page);
+
+    Logger.info(`Logging in as ${role}`);
+
+    await loginPage.goto();
+
+    switch (role) {
+
+        case 'Administrator':
+
+            await loginPage.doLogin(
+                requireEnvVar('ETS_ADMIN_USERNAME'),
+                requireEnvVar('ETS_ADMIN_PASSWORD'),
+                role
+            );
+
+            break;
+
+        case 'Employee':
+
+            await loginPage.doLogin(
+                requireEnvVar('ETS_EMPLOYEE_USERNAME'),
+                requireEnvVar('ETS_EMPLOYEE_PASSWORD'),
+                role
+            );
+
+            break;
+
+        case 'Manager':
+
+            await loginPage.doLogin(
+                requireEnvVar('ETS_MANAGER_USERNAME'),
+                requireEnvVar('ETS_MANAGER_PASSWORD'),
+                role
+            );
+
+            break;
+
+        case 'Accountant':
+
+            await loginPage.doLogin(
+                requireEnvVar('ETS_ACCOUNTANT_USERNAME'),
+                requireEnvVar('ETS_ACCOUNTANT_PASSWORD'),
+                role
+            );
+
+            break;
+
+        case 'LDAP':
+
+            await loginPage.doLogin(
+                process.env.ETS_LDAP_USERNAME?.trim() || requireEnvVar('ETS_EMPLOYEE_USERNAME'),
+                process.env.ETS_LDAP_PASSWORD?.trim() || requireEnvVar('ETS_EMPLOYEE_PASSWORD'),
+                role
+            );
+
+            break;
+
+        default:
+            throw new Error(`Unsupported role: ${role}`);
+    }
+
+    Logger.success(`${role} login completed successfully`);
+}
+
+/**
+ * Validate required environment variables.
  */
 export function validateEnvVariables(): void {
-  const requiredVars = [
-    'URL',
-    'USERNAME',
-    'PASSWORD',
-  ];
 
-  const missingVars = requiredVars.filter(varName => !process.env[varName]);
+    const requiredVariables = [
 
-  if (missingVars.length > 0) {
-    Logger.error(`Missing environment variables: ${missingVars.join(', ')}`);
-    throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
-  }
+        'ETS_BASE_URL',
 
-  Logger.success('✅ All environment variables validated');
+        'ETS_ADMIN_USERNAME',
+        'ETS_ADMIN_PASSWORD',
+
+        'ETS_EMPLOYEE_USERNAME',
+        'ETS_EMPLOYEE_PASSWORD',
+
+        'ETS_MANAGER_USERNAME',
+        'ETS_MANAGER_PASSWORD',
+
+        'ETS_ACCOUNTANT_USERNAME',
+        'ETS_ACCOUNTANT_PASSWORD'
+
+    ];
+
+    const missingVariables = requiredVariables.filter(
+        variable => !process.env[variable]
+    );
+
+    if (missingVariables.length > 0) {
+
+        throw new Error(
+            `Missing environment variables:\n${missingVariables.join('\n')}`
+        );
+
+    }
+
+    Logger.success('All required environment variables are configured.');
 }

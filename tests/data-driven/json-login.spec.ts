@@ -12,11 +12,11 @@ interface LoginTestData extends UserCredentials {
 }
 
 const userRoleMap: Record<string, UserRole> = {
-  admin: 'Administrator',
-  kmkrishna: 'LDAP',
-  nsundar: 'LDAP',
-  spilli: 'LDAP',
-  dummyUsername: 'Administrator',
+  admin: "Administrator",
+  kmkrishna: "Employee",
+  mhemanth: "Accountant",
+  spilli: "Manager",
+  dummyUsername: "Administrator",
 };
 
 const loginData: LoginTestData[] = (credentials as UserCredentials[]).map(
@@ -25,10 +25,19 @@ const loginData: LoginTestData[] = (credentials as UserCredentials[]).map(
       username === 'dummyUsername' && password === 'dummyPassword@123';
 
     const role = userRoleMap[username] ?? 'Administrator';
+    const effectivePassword = role === 'Administrator'
+      ? process.env.ETS_ADMIN_PASSWORD || password
+      : role === 'Employee'
+        ? process.env.ETS_EMPLOYEE_PASSWORD || password
+        : role === 'Manager'
+          ? process.env.ETS_MANAGER_PASSWORD || password
+          : role === 'Accountant'
+            ? process.env.ETS_ACCOUNTANT_PASSWORD || password
+            : password;
 
     return {
       username,
-      password,
+      password: effectivePassword,
       role,
       expectedOutcome: isInvalid ? 'invalid' : 'valid',
       scenarioName: isInvalid
@@ -38,7 +47,7 @@ const loginData: LoginTestData[] = (credentials as UserCredentials[]).map(
   }
 );
 
-test.describe('Login Module - Data Driven Authentication (JSON)', () => {
+test.describe('@regression Login Module - Data Driven Authentication (JSON)', () => {
   test.beforeEach(async ({ loginPage }) => {
     Logger.info('Navigating to Login Page');
     await loginPage.goto();
@@ -78,12 +87,8 @@ test.describe('Login Module - Data Driven Authentication (JSON)', () => {
       await loginPage.doLogin(data.username, data.password, data.role);
 
       if (data.expectedOutcome === 'valid') {
-        await loginPage.page.waitForURL('**/dashboard', { timeout: 30000 });
-        await Assertions.verifyElementVisible(
-          loginPage.dashboardHeader,
-          'Dashboard header',
-          30000
-        );
+        await loginPage.page.waitForURL('**/dashboard/', { timeout: 30000 });
+        await loginPage.verifyDashboard(data.role);
 
         Logger.success(`✅ ${data.scenarioName} passed`);
       } else {

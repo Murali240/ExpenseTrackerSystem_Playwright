@@ -7,7 +7,7 @@ function generate() {
     ['username', 'password', 'role', 'expected'],
     ['admin', 'issi@1234', 'admin', 'success'],
     ['kmkrishna', 'Gangamma@33', 'ldap', 'success'],
-    ['nsundar', 'Chinna@123456789', 'ldap', 'success'],
+    ['mhemanth', 'Bindu1986@', 'ldap', 'success'],
     ['spilli', '$!V@p@V!@2329', 'ldap', 'success'],
     ['dummyUsername', 'dummyPassword@123', 'unknown', 'failure'],
   ];

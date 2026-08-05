@@ -6,20 +6,20 @@ import { UserRole } from '@types';
 /* ==================== TEST DATA ==================== */
 
 const adminUser = {
-  username: process.env.MMM_ADMIN_USERNAME!,
-  password: process.env.MMM_ADMIN_PASSWORD!,
+  username: process.env.ETS_ADMIN_USERNAME!,
+  password: process.env.ETS_ADMIN_PASSWORD!,
   role: 'Administrator' as UserRole
 };
 
 const ldapUser = {
-  username: process.env.MMM_LDAP_USERNAME!,
-  password: process.env.MMM_LDAP_PASSWORD!,
+  username: process.env.ETS_LDAP_USERNAME || process.env.ETS_EMPLOYEE_USERNAME || process.env.ETS_MANAGER_USERNAME || 'kmkrishna',
+  password: process.env.ETS_LDAP_PASSWORD || process.env.ETS_EMPLOYEE_PASSWORD || process.env.ETS_MANAGER_PASSWORD || 'Gangamma@8',
   role: 'LDAP' as UserRole
 };
 
 /* ==================== TEST SUITE ==================== */
 
-test.describe('Login Module - Authentication Validation (Environment Variables)', () => {
+test.describe('@regression Login Module - Authentication Validation (Environment Variables)', () => {
 
   test.beforeEach(async ({ loginPage }) => {
     Logger.info('Navigating to Login Page');
@@ -35,7 +35,7 @@ test.describe('Login Module - Authentication Validation (Environment Variables)'
     test.info().annotations.push({ type: 'role', description: adminUser.role });
 
     // UI Validation
-    await Assertions.verifyElementVisible(loginPage.signinMMMHeading, 'Login heading');
+    await Assertions.verifyElementVisible(loginPage.signinETSHeading, 'Login heading');
     await Assertions.verifyElementVisible(loginPage.userNameField, 'Username field');
     await Assertions.verifyElementVisible(loginPage.passwordField, 'Password field');
     await Assertions.verifyElementVisible(loginPage.loginButton, 'Login button');
@@ -48,9 +48,8 @@ test.describe('Login Module - Authentication Validation (Environment Variables)'
     );
 
     // Dashboard Validation
-    await loginPage.page.waitForURL('**/dashboard', { timeout: 30000 });
-
-    await Assertions.verifyElementVisible(loginPage.dashboardHeader, 'Dashboard header', 30000);
+    await loginPage.page.waitForURL('**/dashboard/', { timeout: 30000 });
+    await loginPage.verifyDashboard(adminUser.role);
 
     Logger.success('✅ Admin login successful');
     Logger.testEnd('TC-LOGIN-001');
@@ -64,7 +63,7 @@ test.describe('Login Module - Authentication Validation (Environment Variables)'
     test.info().annotations.push({ type: 'role', description: ldapUser.role });
 
     // UI Validation
-    await Assertions.verifyElementVisible(loginPage.signinMMMHeading, 'Login heading');
+    await Assertions.verifyElementVisible(loginPage.signinETSHeading, 'Login heading');
     await Assertions.verifyElementVisible(loginPage.userNameField, 'Username field');
     await Assertions.verifyElementVisible(loginPage.passwordField, 'Password field');
     await Assertions.verifyElementVisible(loginPage.loginButton, 'Login button');
@@ -77,10 +76,8 @@ test.describe('Login Module - Authentication Validation (Environment Variables)'
     );
 
     // Dashboard Validation
-    await loginPage.page.waitForURL('**/dashboard', { timeout: 30000 });
-
-    await Assertions.verifyElementVisible(loginPage.dashboardHeader, 'Dashboard header', 30000
-    );
+    await loginPage.page.waitForURL('**/dashboard/', { timeout: 30000 });
+    await loginPage.verifyDashboard(ldapUser.role);
 
     Logger.success('✅ LDAP login successful');
     Logger.testEnd('TC-LOGIN-002');
@@ -98,8 +95,8 @@ test.describe('Login Module - Authentication Validation (Environment Variables)'
     await Assertions.verifyElementVisible(loginPage.loginButton, 'Login button');
 
     await loginPage.doLogin(
-      process.env.MMM_INVALID_USERNAME!,
-      process.env.MMM_INVALID_PASSWORD!,
+      process.env.ETS_INVALID_USERNAME!,
+      process.env.ETS_INVALID_PASSWORD!,
       'Administrator'
     );
 

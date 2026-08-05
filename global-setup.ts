@@ -34,13 +34,17 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
   removeIfExists(path.join(projectRoot, 'allure-report'));
 
   const required = [
-    'MMM_BASE_URL',
-    'MMM_ADMIN_USERNAME',
-    'MMM_ADMIN_PASSWORD',
-    'MMM_LDAP_USERNAME',
-    'MMM_LDAP_PASSWORD',
-    'MMM_INVALID_USERNAME',
-    'MMM_INVALID_PASSWORD',
+    'ETS_BASE_URL',
+    'ETS_ADMIN_USERNAME',
+    'ETS_ADMIN_PASSWORD',
+    'ETS_EMPLOYEE_USERNAME',
+    'ETS_EMPLOYEE_PASSWORD',
+    'ETS_MANAGER_USERNAME',
+    'ETS_MANAGER_PASSWORD',
+    'ETS_ACCOUNTANT_USERNAME',
+    'ETS_ACCOUNTANT_PASSWORD',
+    'ETS_INVALID_USERNAME',
+    'ETS_INVALID_PASSWORD',
   ] as const;
 
   const missing = required.filter((key) => !process.env[key]?.trim());

@@ -98,16 +98,24 @@ export class BasePage {
   /**
    * Click on an element with wait
    */
-  async clickElement(locator: Locator, elementName: string = 'element'): Promise<void> {
-    Logger.info(`Clicking on: ${elementName}`);
-    await this.waitForElement(locator);
-    await locator.click();
+
+  async clickElement(locator: Locator, elementName: string): Promise<void> {
+      Logger.info(`Clicking on: ${elementName}`);
+
+      await this.waitForElement(locator);
+
+      await locator.click({
+          timeout: 30000
+      });
   }
 
   /**
    * Fill input field
    */
   async fillInput(locator: Locator, value: string, fieldName: string = 'field'): Promise<void> {
+    if (value === undefined || value === null) {
+      throw new Error(`Cannot fill ${fieldName}: value is ${value}`);
+    }
     Logger.info(`Filling ${fieldName} with value: ${value}`);
     await this.waitForElement(locator);
     await locator.clear();
@@ -123,13 +131,6 @@ export class BasePage {
     //await locator.selectOption({ label: value })
     await locator.selectOption(value);
   }
-
-
-
-
-
-  
-
 
   /**
    * Get text from element

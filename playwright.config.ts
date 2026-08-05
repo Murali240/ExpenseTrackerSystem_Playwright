@@ -18,7 +18,7 @@ const osEdition = osType === 'Windows'
 const environmentInfo = {
   framework: 'Playwright',
   language: 'TypeScript',
-  application: 'MMManager',
+  application: 'Expense Tracker System',
   environment: 'Testing',
   os: osEdition,
   osVersion: rawOsRelease,
@@ -57,7 +57,7 @@ export default defineConfig({
           environmentInfo: {
             framework: 'Playwright',
             language: 'TypeScript',
-            application: 'MM Manager',
+            application: 'Expense Tracker System',
             environment: 'CI',
             nodeVersion: process.version
           }
@@ -73,14 +73,14 @@ export default defineConfig({
           environmentInfo: {
             framework: 'Playwright',
             language: 'TypeScript',
-            application: 'MM Manager',
+            application: 'Expense Tracker System',
               environmentInfo: environmentInfo
           }
         }]
       ],
 
   use: {
-    baseURL: process.env.MMM_BASE_URL,
+    baseURL: process.env.ETS_BASE_URL,
     trace: process.env.CI ? 'retain-on-failure' : 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',

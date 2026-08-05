@@ -5,10 +5,10 @@ import { Paths } from '@constants/Paths';
 import { Logger } from '@utils/logger';
 
 // Page Objects
-import { LoginPage } from '@pages/LoginPage';
-import { DashboardPage } from '@pages/DashboardPage';
-import { DiaryPage } from '@pages/DiaryPage';
-import { MeetingsPage } from '@pages/MeetingsPage';
+import { LoginPage } from '../pages/common/LoginPage';
+import { DashboardPage } from '../pages/DashboardPage';
+import { ExpenseManagementPage } from '../pages/ExpenseManagementPage';
+import { ExpenseReviewPage } from '../pages/manager/ExpenseReviewPage';
 import { UserRole } from '../types';
 
 /* ==================== TYPES ==================== */
@@ -23,8 +23,8 @@ type Fixtures = {
   // ✅ Page objects
   loginPage: LoginPage;
   dashboardPage: DashboardPage;
-  diaryPage: DiaryPage;
-  meetingsPage: MeetingsPage;
+  expenseManagementPage: ExpenseManagementPage;
+  expenseReviewPage: ExpenseReviewPage;
 };
 
 /* ==================== HELPER FUNCTIONS ==================== */
@@ -39,7 +39,7 @@ function ensureAuthDirectoryExists(): void {
 function isSessionValid(page: Page): boolean {
   try {
     const parsedUrl = new URL(page.url());
-    const isValid = parsedUrl.pathname === '/dashboard' || parsedUrl.pathname.startsWith('/dashboard');
+    const isValid = parsedUrl.pathname === '/dashboard/' || parsedUrl.pathname.startsWith('/dashboard/');
     Logger.info(`Session validation: ${isValid ? '✅ Valid' : '❌ Invalid'} - URL: ${page.url()}`);
     return isValid;
   } catch (error) {
@@ -94,14 +94,14 @@ async function createAuthenticatedPage(
 
   const page = await context.newPage();
   try {
-    await page.goto('/dashboard', {
+    await page.goto('/dashboard/', {
       waitUntil: 'domcontentloaded',
       timeout: 60000,
     });
     await page.waitForLoadState('networkidle', { timeout: 60000 }).catch(() => {});
   } catch (error) {
     Logger.warn('Dashboard route did not load cleanly, retrying with default navigation path');
-    await page.goto('/dashboard', {
+    await page.goto('/dashboard/', {
       waitUntil: 'domcontentloaded',
       timeout: 60000,
     });
@@ -112,7 +112,7 @@ async function createAuthenticatedPage(
     Logger.warn(`⚠️  Session invalid for ${role} - performing fresh login`);
     deleteStaleAuthFile(authFile, role);
     await loginAs(page, role);
-    await page.waitForURL('**/dashboard', { timeout: 20000 });
+    await page.waitForURL('**/dashboard/', { timeout: 20000 });
     await page.waitForLoadState('networkidle');
     await context.storageState({ path: authFile });
     Logger.success(`✅ Fresh ${role} session saved`);
@@ -145,7 +145,7 @@ export const test = base.extend<Fixtures>({
 
   /* ==================== AUTHENTICATED FIXTURES ==================== */
 
-  authPage: async ({ browser }, use) => {
+  authPage: async ({ browser }: { browser: any }, use: (page: Page) => Promise<void>) => {
     const page = await createAuthenticatedPage(browser, Paths.AUTH_FILE, 'Administrator');
     await use(page);
     await page.context().close();
@@ -158,7 +158,7 @@ export const test = base.extend<Fixtures>({
    * Generic guest page - no authentication
    * Use for: Registration tests, login tests, public page tests
    */
-  guestPage: async ({ browser }, use) => {
+  guestPage: async ({ browser }: { browser: any }, use: (page: Page) => Promise<void>) => {
     const page = await createGuestPage(browser);
     await use(page);
     await page.context().close();
@@ -168,21 +168,22 @@ export const test = base.extend<Fixtures>({
 
   /* ==================== PAGE OBJECT FIXTURES ==================== */
 
-  loginPage: async ({ guestPage }, use) => {
+  loginPage: async ({ guestPage }: { guestPage: Page }, use: (pageObject: LoginPage) => Promise<void>) => {
     await use(new LoginPage(guestPage));
   },
 
-  dashboardPage: async ({ authPage }, use) => {
+  dashboardPage: async ({ authPage }: { authPage: Page }, use: (pageObject: DashboardPage) => Promise<void>) => {
     await use(new DashboardPage(authPage));
   },
 
-   diaryPage: async ({ authPage }, use) => {
-     await use(new DiaryPage(authPage));
-   },
-
-  meetingsPage: async ({ authPage }, use) => {
-    await use(new MeetingsPage(authPage));
+  expenseManagementPage: async ({ authPage }: { authPage: Page }, use: (pageObject: ExpenseManagementPage) => Promise<void>) => {
+    await use(new ExpenseManagementPage(authPage));
   },
+
+  expenseReviewPage: async ({ authPage }: { authPage: Page }, use: (pageObject: ExpenseReviewPage) => Promise<void>) => {
+    await use(new ExpenseReviewPage(authPage));
+  },
+
 });
 
 /* ==================== GLOBAL HOOKS ==================== */
