@@ -3,7 +3,7 @@ import { LoginPage } from '../../src/pages/common/LoginPage';
 import { EmployeeExpensePage } from '../../src/pages/employee/EmployeeExpensePage';
 import { Logger } from '@utils/logger';
 
-test.only('Employee can submit multiple expenses in a single expense request', async ({ browser }) => {
+test('Employee can submit multiple expenses in a single expense request', async ({ browser }) => {
 
     test.setTimeout(180000);
 
