@@ -2,32 +2,26 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main',
-                    url: 'https://github.com/Murali240/MMManager-LatestCode.git'
-            }
-        }
 
         stage('Install Dependencies') {
             steps {
-                bat 'npm install'
+                bat 'npm ci'
             }
         }
 
-        stage('Install Playwright Browsers') {
+        stage('Install Browsers') {
             steps {
                 bat 'npx playwright install'
             }
         }
 
-        stage('Run Regression Suite') {
+        stage('Run Regression Tests') {
             steps {
-                bat 'npx playwright test --grep @Regression'
+                bat 'npx playwright test --grep "@regression"'
             }
         }
 
-        stage('Publish Report') {
+        stage('Publish HTML Report') {
             steps {
                 archiveArtifacts artifacts: 'playwright-report/**', fingerprint: true
             }
