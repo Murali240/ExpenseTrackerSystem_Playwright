@@ -363,18 +363,94 @@ export class ExpenseManagementPage extends SharedComponents {
         );
     }
 
+    async selectExpenseTypeBySection(
+        expenseType: string,
+        sectionIndex: number = 0
+    ): Promise<void> {
+
+        Logger.info(
+            `Selecting Expense Type '${expenseType}' for Section ${sectionIndex + 1}`
+        );
+
+        // Click Expense Type dropdown of required section
+        await this.page
+            .locator(".exp-type-caret")
+            .nth(sectionIndex)
+            .click();
+
+        // Wait for category list
+        const categoryHeaders =
+            this.page.locator("//div[@class='exp-cat-header']");
+
+        await categoryHeaders.first().waitFor({
+            state: "visible"
+        });
+
+        const categoryCount =
+            await categoryHeaders.count();
+
+        // Calculate starting category for current section
+        const categoryStart =
+            Math.floor(categoryCount / (sectionIndex + 1)) * sectionIndex;
+
+        // Expand first category
+        await categoryHeaders
+            .nth(categoryStart)
+            .click();
+
+        // Expense options
+        const expenseOptions =
+            this.page.locator("//div[@class='exp-item-option']");
+
+        await expenseOptions.first().waitFor({
+            state: "visible"
+        });
+
+        // Select by text
+        const option =
+            expenseOptions.filter({
+                hasText: expenseType
+            }).first();
+
+        if (await option.count() > 0) {
+
+            await option.click();
+
+        } else {
+
+            throw new Error(
+                `Expense Type '${expenseType}' not found`
+            );
+
+        }
+
+        Logger.success(
+            `Expense Type Selected : ${expenseType}`
+        );
+    }
+
     async selectExpenseType(
         expenseType: string
     ): Promise<void> {
 
-        await this.expenseTypeDropdown.selectOption({
-            label: expenseType
-        });
-
-        Logger.info(
-            `Expense Type Selected: ${expenseType}`
+        await this.selectExpenseTypeBySection(
+            expenseType,
+            0
         );
     }
+
+    // async selectExpenseType(
+    //     expenseType: string
+    // ): Promise<void> {
+
+    //     await this.expenseTypeDropdown.selectOption({
+    //         label: expenseType
+    //     });
+
+    //     Logger.info(
+    //         `Expense Type Selected: ${expenseType}`
+    //     );
+    // }
 
     async selectPaymentMethod(
         paymentMethod: string
@@ -542,10 +618,10 @@ export class ExpenseManagementPage extends SharedComponents {
                     `#id_details_id_expenses_mstr-${index}-id_project`
                 );
 
-            const expenseTypeDropdown =
-                this.page.locator(
-                    `#id_details_id_expenses_mstr-${index}-id_exp`
-                );
+            // const expenseTypeDropdown =
+            //     this.page.locator(
+            //         `#id_details_id_expenses_mstr-${index}-id_exp`
+            //     );
 
             const merchantInput =
                 this.page.locator(
@@ -657,9 +733,14 @@ export class ExpenseManagementPage extends SharedComponents {
             // Select first project
             await projectDropdown.selectOption(projectValue);
 
-            await expenseTypeDropdown.selectOption({
-                label: "Train"
-            });
+            await this.selectExpenseTypeBySection(
+                "Guest House",   // or pass a variable if you want it dynamic
+                index
+            );
+
+            // await expenseTypeDropdown.selectOption({
+            //     label: "Train"
+            // });
 
             await merchantInput.fill(merchantName);
 

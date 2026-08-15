@@ -15,6 +15,7 @@ const osEdition = osType === 'Windows'
     ? 'Windows 11'
     : 'Windows 10'
   : osType;
+
 const environmentInfo = {
   framework: 'Playwright',
   language: 'TypeScript',
@@ -52,8 +53,12 @@ export default defineConfig({
         ['junit', { outputFile: 'test-results/junit.xml' }],
         ['allure-playwright', {
           detail: true,
-          outputFolder: 'allure-results',
+
+          // Jenkins Allure results directory
+          resultsDir: 'allure-results',
+
           suiteTitle: false,
+
           environmentInfo: {
             framework: 'Playwright',
             language: 'TypeScript',
@@ -68,14 +73,13 @@ export default defineConfig({
         ['html', { open: 'never', outputFolder: 'playwright-report' }],
         ['allure-playwright', {
           detail: true,
-          outputFolder: 'allure-results',
+
+          // Local Allure results directory
+          resultsDir: 'allure-results',
+
           suiteTitle: false,
-          environmentInfo: {
-            framework: 'Playwright',
-            language: 'TypeScript',
-            application: 'Expense Tracker System',
-              environmentInfo: environmentInfo
-          }
+
+          environmentInfo: environmentInfo
         }]
       ],
 
@@ -92,15 +96,15 @@ export default defineConfig({
      * Using 1920x1080 for better testing coverage
      * ============================================ */
     viewport: { 
-      width: 1440,   // Wider than native - tests wider screens
-      height: 900   // Taller than native - tests more content
+      width: 1440,
+      height: 900
     },
 
     actionTimeout: 15000,
     navigationTimeout: 30000,
     ignoreHTTPSErrors: true,
     locale: 'en-IN',
-      timezoneId: 'Asia/Kolkata',
+    timezoneId: 'Asia/Kolkata',
   },
 
   projects: process.env.CI 
@@ -134,17 +138,18 @@ export default defineConfig({
           name: 'chromium',
           use: { 
             ...devices['Desktop Chrome'],
-            viewport: { width: 1440, height: 900 },  // ✅ Best for testing
+            viewport: { width: 1440, height: 900 },
           },
         },
 
-         {
+        {
           name: 'firefox',
           use: {
             ...devices['Desktop Firefox'],
             viewport: { width: 1440, height: 900 },
           },
         },
+
         {
           name: 'webkit',
           use: {
